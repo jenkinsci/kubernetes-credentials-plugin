@@ -8,7 +8,7 @@
 
   <groupId>org.jenkinsci.plugins</groupId>
   <artifactId>kubernetes-credentials</artifactId>
-  <version>0.2.1-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <name>Kubernetes Credentials Plugin</name>
   <description>Common classes for Kubernetes credentials</description>
   <packaging>hpi</packaging>
@@ -47,6 +47,7 @@
 
     <!-- jenkins plugins versions -->
     <jenkins-credentials.version>2.1.7</jenkins-credentials.version>
+    <jenkins-plain-credentials.version>1.3</jenkins-plain-credentials.version>
 
   </properties>
 
@@ -69,6 +70,12 @@
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>credentials</artifactId>
       <version>${jenkins-credentials.version}</version>
+    </dependency>
+    <!-- to use StringCredentialsImpl for tokens -->
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>plain-credentials</artifactId>
+      <version>${jenkins-plain-credentials.version}</version>
     </dependency>
   </dependencies>
 
