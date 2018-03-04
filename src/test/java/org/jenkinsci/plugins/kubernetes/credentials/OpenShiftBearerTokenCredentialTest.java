@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.kubernetes.credentials;
 
 import com.cloudbees.plugins.credentials.CredentialsScope;
+import hudson.util.Secret;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,9 +33,25 @@ public class OpenShiftBearerTokenCredentialTest {
     }
 
     @Test
-    public void testTokenExtraction(){
-        OpenShiftBearerTokenCredentialImpl.Token token = OpenShiftBearerTokenCredentialImpl.extractToken("https://master.cluster.local:8443/oauth/token/display#access_token=VO4dAgNGLnX5MGYu_wXau8au2Rw0QAqnwq8AtrLkMfU&expires_in=86400&token_type=bearer");
+    public void testValidTokenExtraction() throws OpenShiftBearerTokenCredentialImpl.TokenResponseError {
+        OpenShiftBearerTokenCredentialImpl.Token token = OpenShiftBearerTokenCredentialImpl.extractTokenFromLocation("https://master.cluster.local:8443/oauth/token/display#access_token=VO4dAgNGLnX5MGYu_wXau8au2Rw0QAqnwq8AtrLkMfU&expires_in=86400&token_type=bearer");
         assertEquals("VO4dAgNGLnX5MGYu_wXau8au2Rw0QAqnwq8AtrLkMfU",token.value);
         assertEquals(86400000,token.expire-System.currentTimeMillis()+EARLY_EXPIRE_DELAY);
+    }
+
+    @Test(expected = OpenShiftBearerTokenCredentialImpl.TokenResponseError.class)
+    public void testInvalidExpireTokenExtraction() throws OpenShiftBearerTokenCredentialImpl.TokenResponseError {
+        OpenShiftBearerTokenCredentialImpl.extractTokenFromLocation("https://master.cluster.local:8443/oauth/token/display#access_token=VO4dAgNGLnX5MGYu_wXau8au2Rw0QAqnwq8AtrLkMfU&expires_in=bad&token_type=bearer");
+    }
+
+    @Test(expected = OpenShiftBearerTokenCredentialImpl.TokenResponseError.class)
+    public void testErroneousTokenExtraction() throws OpenShiftBearerTokenCredentialImpl.TokenResponseError {
+        OpenShiftBearerTokenCredentialImpl.extractTokenFromLocation("https://master.cluster.local:8443/oauth/token/display#error=an+error+has_occured&error_description=bad+username&access_token=VO4dAgNGLnX5MGYu_wXau8au2Rw0QAqnwq8AtrLkMfU&expires_in=86400&token_type=bearer");
+    }
+
+    @Test
+    public void testAuthorizationHeader() {
+        String header = OpenShiftBearerTokenCredentialImpl.getBasicAuthenticationHeader(USERNAME, Secret.fromString(PASSWORD));
+        assertEquals("Basic bWF4LmxhdmVyc2U6c3VwZXItc2VjcmV0", header);
     }
 }
