@@ -43,6 +43,7 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
     /*
      * Extract a token from url parameters
      */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value="SF_SWITCH_NO_DEFAULT", justification="Other values can be discarded")
     protected static Token extractTokenFromLocation(String location) throws TokenResponseError {
         String parameters = location.substring(location.indexOf('#') + 1);
         List<NameValuePair> pairs = URLEncodedUtils.parse(parameters, StandardCharsets.UTF_8);
