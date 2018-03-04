@@ -65,6 +65,7 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
         Token t = this.token.get();
         if (t == null || System.currentTimeMillis() > t.expire) {
             t = refreshToken(serviceAddress, caCertData, skipTlsVerify);
+            this.token.set(t);
         }
 
         return t.value;
