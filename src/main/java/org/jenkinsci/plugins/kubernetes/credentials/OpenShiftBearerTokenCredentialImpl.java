@@ -71,7 +71,10 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
             }
         }
         if (!error.isEmpty() || !errorDescription.isEmpty()) {
-            throw new TokenResponseError("An error was returned instead of a token: " + error + " " + errorDescription);
+            throw new TokenResponseError("An error was returned instead of a token: " + error + ", " + errorDescription);
+        }
+        if (token.value == null || token.value.isEmpty()) {
+            throw new TokenResponseError("The response contained no token");
         }
         return token;
     }
@@ -105,6 +108,8 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
                 throw new IOException("The response from the OAuth server was invalid: " + e.getMessage(), e);
             }
 
+            // If the same username/password are used different oauthServerURLs, this will break
+            // TODO: Improve
             this.token.set(token);
         }
 
@@ -123,7 +128,7 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
         final CloseableHttpResponse response = builder.build().execute(authorize);
 
         if (response.getStatusLine().getStatusCode() != 302) {
-            throw new TokenResponseError("The OAuth service didn't respond with a redirection but with '" + response.getStatusLine().getStatusCode() + "'");
+            throw new TokenResponseError("The OAuth service didn't respond with a redirection but with '" + response.getStatusLine().getStatusCode() + ": " + response.getStatusLine().getReasonPhrase() + "'");
         }
 
         Header location = response.getFirstHeader("Location");
