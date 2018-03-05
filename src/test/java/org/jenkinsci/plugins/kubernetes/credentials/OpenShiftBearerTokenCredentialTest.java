@@ -9,7 +9,7 @@ import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.IOException;
 
-import static org.jenkinsci.plugins.kubernetes.credentials.OpenShiftBearerTokenCredentialImpl.EARLY_EXPIRE_DELAY;
+import static org.jenkinsci.plugins.kubernetes.credentials.OpenShiftBearerTokenCredentialImpl.EARLY_EXPIRE_DELAY_SEC;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -36,7 +36,10 @@ public class OpenShiftBearerTokenCredentialTest {
     public void testValidTokenExtraction() throws OpenShiftBearerTokenCredentialImpl.TokenResponseError {
         OpenShiftBearerTokenCredentialImpl.Token token = OpenShiftBearerTokenCredentialImpl.extractTokenFromLocation("https://master.cluster.local:8443/oauth/token/display#access_token=VO4dAgNGLnX5MGYu_wXau8au2Rw0QAqnwq8AtrLkMfU&expires_in=86400&token_type=bearer");
         assertEquals("VO4dAgNGLnX5MGYu_wXau8au2Rw0QAqnwq8AtrLkMfU",token.value);
-        assertEquals(86400000,token.expire-System.currentTimeMillis()+EARLY_EXPIRE_DELAY);
+
+        // We are optimistic here and except the test to run in less than a second.
+        // Can be improve if we see test failing sometimes
+        assertEquals(86100000,token.expire-System.currentTimeMillis());
     }
 
     @Test(expected = OpenShiftBearerTokenCredentialImpl.TokenResponseError.class)

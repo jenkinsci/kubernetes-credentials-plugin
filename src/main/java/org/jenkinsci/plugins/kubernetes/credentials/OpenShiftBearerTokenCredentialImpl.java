@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  */
 public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredentialsImpl implements TokenProducer {
     // Used to artificially reduce the lifespan of a token
-    protected static final long EARLY_EXPIRE_DELAY = 100;
+    protected static final long EARLY_EXPIRE_DELAY_SEC = 300;
     private static final long serialVersionUID = 6031616605797622926L;
     private static final Logger logger = Logger.getLogger(OpenShiftBearerTokenCredentialImpl.class.getName());
     private transient AtomicReference<Token> token = new AtomicReference<Token>();
@@ -43,7 +43,7 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
     /*
      * Extract a token from url parameters
      */
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value="SF_SWITCH_NO_DEFAULT", justification="Other values can be discarded")
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "SF_SWITCH_NO_DEFAULT", justification = "Other values can be discarded")
     protected static Token extractTokenFromLocation(String location) throws TokenResponseError {
         String parameters = location.substring(location.indexOf('#') + 1);
         List<NameValuePair> pairs = URLEncodedUtils.parse(parameters, StandardCharsets.UTF_8);
@@ -57,7 +57,7 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
                     break;
                 case "expires_in":
                     try {
-                        token.expire = System.currentTimeMillis() + Long.parseLong(pair.getValue()) * 1000 - EARLY_EXPIRE_DELAY;
+                        token.expire = System.currentTimeMillis() + (Long.parseLong(pair.getValue()) - EARLY_EXPIRE_DELAY_SEC) * 1000;
                     } catch (NumberFormatException e) {
                         throw new TokenResponseError("Bad format for the token expiration value: " + pair.getValue());
                     }
@@ -127,7 +127,7 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
         }
 
         Header location = response.getFirstHeader("Location");
-        if (location==null) {
+        if (location == null) {
             throw new TokenResponseError("The OAuth service didn't respond with location header");
         }
 
