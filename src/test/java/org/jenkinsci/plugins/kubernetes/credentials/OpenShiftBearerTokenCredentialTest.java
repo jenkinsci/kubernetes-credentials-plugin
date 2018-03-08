@@ -56,6 +56,17 @@ public class OpenShiftBearerTokenCredentialTest {
     }
 
     @Test
+    public void testMultipleCachedTokens() throws IOException {
+        OpenShiftBearerTokenCredentialImpl t = new OpenShiftBearerTokenCredentialImpl(CredentialsScope.GLOBAL, CREDENTIAL_ID, "sample", USERNAME, PASSWORD);
+        String token1 = t.getToken(server.getURI() + "valid-response", null, true);
+        String token2 = t.getToken(server.getURI() + "valid-response2", null, true);
+        String token3 = t.getToken(server.getURI() + "valid-response", null, true);
+        assertEquals("1234", token1);
+        assertEquals("1235", token2);
+        assertEquals("1234", token3);
+    }
+
+    @Test
     public void testBadStatusCode() throws IOException {
         expectedEx.expect(IOException.class);
         expectedEx.expectMessage("The response from the OAuth server was invalid: The OAuth service didn't respond with a redirection but with '400: Bad Request'");

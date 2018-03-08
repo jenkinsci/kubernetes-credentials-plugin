@@ -24,6 +24,9 @@ public class MockHttpServlet extends HttpServlet {
             case "/valid-response/oauth/authorize":
                 response.sendRedirect("http://my-service/#access_token=1234&expires_in=86400");
                 break;
+            case "/valid-response2/oauth/authorize":
+                response.sendRedirect("http://my-service/#access_token=1235&expires_in=86400");
+                break;
             default:
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,"Bad test: unknown path " + request.getPathInfo());
                 break;

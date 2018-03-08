@@ -18,7 +18,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
 /**
@@ -33,7 +34,7 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
     protected static final long EARLY_EXPIRE_DELAY_SEC = 300;
     private static final long serialVersionUID = 6031616605797622926L;
     private static final Logger logger = Logger.getLogger(OpenShiftBearerTokenCredentialImpl.class.getName());
-    private transient AtomicReference<Token> token = new AtomicReference<Token>();
+    private transient ConcurrentMap<String, Token> tokenCache = new ConcurrentHashMap<>();
 
     @DataBoundConstructor
     public OpenShiftBearerTokenCredentialImpl(CredentialsScope scope, String id, String description, String username, String password) {
@@ -87,7 +88,7 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
     }
 
     private Object readResolve() {
-        token = new AtomicReference<Token>();
+        tokenCache = new ConcurrentHashMap<>();
         return this;
     }
 
@@ -96,7 +97,7 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
      * Return the previously stored Token or ask for a new one
      */
     public String getToken(String oauthServerURL, String caCertData, boolean skipTlsVerify) throws IOException {
-        Token token = this.token.get();
+        Token token = this.tokenCache.get(oauthServerURL);
         if (token == null || System.currentTimeMillis() > token.expire) {
             try {
                 token = refreshToken(oauthServerURL, caCertData, skipTlsVerify);
@@ -108,9 +109,7 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
                 throw new IOException("The response from the OAuth server was invalid: " + e.getMessage(), e);
             }
 
-            // If the same username/password are used different oauthServerURLs, this will break
-            // TODO: Improve
-            this.token.set(token);
+            this.tokenCache.put(oauthServerURL, token);
         }
 
         return token.value;
