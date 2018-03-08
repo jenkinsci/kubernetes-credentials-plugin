@@ -5,170 +5,155 @@ import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import hudson.Extension;
 import hudson.util.Secret;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Base64InputStream;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
+import org.apache.http.Header;
 import org.apache.http.NameValuePair;
-import org.apache.http.ProtocolException;
-import org.apache.http.client.RedirectStrategy;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.http.ssl.TrustStrategy;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import javax.net.ssl.HostnameVerifier;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Logger;
 
 /**
  * @author <a href="mailto:nicolas.deloof@gmail.com">Nicolas De Loof</a>
+ * @author Max Laverse
+ * <p>
+ * For the specification, see:
+ * https://docs.openshift.com/enterprise/3.0/architecture/additional_concepts/authentication.html#oauth
  */
 public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredentialsImpl implements TokenProducer {
-
+    // Used to artificially reduce the lifespan of a token
+    protected static final long EARLY_EXPIRE_DELAY_SEC = 300;
     private static final long serialVersionUID = 6031616605797622926L;
-
-    private transient AtomicReference<Token> token = new AtomicReference<Token>();
+    private static final Logger logger = Logger.getLogger(OpenShiftBearerTokenCredentialImpl.class.getName());
+    private transient ConcurrentMap<String, Token> tokenCache = new ConcurrentHashMap<>();
 
     @DataBoundConstructor
     public OpenShiftBearerTokenCredentialImpl(CredentialsScope scope, String id, String description, String username, String password) {
         super(scope, id, description, username, password);
     }
 
+    /*
+     * Extract a token from url parameters
+     */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "SF_SWITCH_NO_DEFAULT", justification = "Other values can be discarded")
+    protected static Token extractTokenFromLocation(String location) throws TokenResponseError {
+        String parameters = location.substring(location.indexOf('#') + 1);
+        List<NameValuePair> pairs = URLEncodedUtils.parse(parameters, StandardCharsets.UTF_8);
+
+        String error = "", errorDescription = "";
+        Token token = new Token();
+        for (NameValuePair pair : pairs) {
+            switch (pair.getName()) {
+                case "access_token":
+                    token.value = pair.getValue();
+                    break;
+                case "expires_in":
+                    try {
+                        token.expire = System.currentTimeMillis() + (Long.parseLong(pair.getValue()) - EARLY_EXPIRE_DELAY_SEC) * 1000;
+                    } catch (NumberFormatException e) {
+                        throw new TokenResponseError("Bad format for the token expiration value: " + pair.getValue());
+                    }
+                    break;
+                case "error":
+                    error = pair.getValue();
+                    break;
+                case "error_description":
+                    errorDescription = pair.getValue();
+                    break;
+            }
+        }
+        if (!error.isEmpty() || !errorDescription.isEmpty()) {
+            throw new TokenResponseError("An error was returned instead of a token: " + error + ", " + errorDescription);
+        }
+        if (token.value == null || token.value.isEmpty()) {
+            throw new TokenResponseError("The response contained no token");
+        }
+        return token;
+    }
+
+    /*
+     * Return a header value for basic authentication
+     */
+    protected static String getBasicAuthenticationHeader(String username, Secret password) {
+        return "Basic " + Base64.encodeBase64String((username + ':' + Secret.toString(password)).getBytes(StandardCharsets.UTF_8));
+    }
+
     private Object readResolve() {
-        token = new AtomicReference<Token>();
+        tokenCache = new ConcurrentHashMap<>();
         return this;
     }
 
-
     @Override
-    public String getToken(String serviceAddress, String caCertData, boolean skipTlsVerify) throws IOException {
-        Token t = this.token.get();
-        if (t == null || System.currentTimeMillis() > t.expire) {
-            t = refreshToken(serviceAddress, caCertData, skipTlsVerify);
+    /*
+     * Return the previously stored Token or ask for a new one
+     */
+    public String getToken(String oauthServerURL, String caCertData, boolean skipTlsVerify) throws IOException {
+        Token token = this.tokenCache.get(oauthServerURL);
+        if (token == null || System.currentTimeMillis() > token.expire) {
+            try {
+                token = refreshToken(oauthServerURL, caCertData, skipTlsVerify);
+            } catch (HttpClientWithTLSOptionsFactory.TLSConfigurationError e) {
+                throw new IOException("Could not configure SSL Factory in HttpClientWithTLSOptionsFactory: " + e.getMessage(), e);
+            } catch (URISyntaxException e) {
+                throw new IOException("The OAuth server URL was invalid ('" + oauthServerURL + "'): " + e.getMessage(), e);
+            } catch (TokenResponseError e) {
+                throw new IOException("The response from the OAuth server was invalid: " + e.getMessage(), e);
+            }
+
+            this.tokenCache.put(oauthServerURL, token);
         }
 
-        return t.value;
+        return token.value;
     }
 
-    private synchronized Token refreshToken(String serviceAddress, String caCertData, boolean skipTlsVerify) throws IOException {
+    /*
+     * Ask for a new token by calling the OpenShift OAuth server
+     */
+    private synchronized Token refreshToken(String oauthServerURL, String caCertData, boolean skipTLSVerify) throws URISyntaxException, HttpClientWithTLSOptionsFactory.TLSConfigurationError, TokenResponseError, IOException {
+        URI uri = new URI(oauthServerURL);
 
-        URI uri = null;
-        try {
-            uri = new URI(serviceAddress);
-        } catch (URISyntaxException e) {
-            throw new IOException("Invalid server URL " + serviceAddress, e);
-        }
-
-        final HttpClientBuilder builder = HttpClients.custom()
-                .setRedirectStrategy(NO_REDIRECT);
-
-        if (skipTlsVerify || caCertData != null) {
-            final SSLContextBuilder sslBuilder = new SSLContextBuilder();
-            HostnameVerifier hostnameVerifier = SSLConnectionSocketFactory.getDefaultHostnameVerifier();
-            try {
-                if (skipTlsVerify) {
-                    sslBuilder.loadTrustMaterial(null, ALWAYS);
-                    hostnameVerifier = NoopHostnameVerifier.INSTANCE;
-                } else if (caCertData != null) {
-                    KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-                    ks.load(null);
-                    CertificateFactory f = CertificateFactory.getInstance("X509");
-                    X509Certificate cert = (X509Certificate) f.generateCertificate(new Base64InputStream(
-                            new ByteArrayInputStream(caCertData.getBytes(StandardCharsets.UTF_8))));
-                    ks.setCertificateEntry(uri.getHost(), cert);
-                    sslBuilder.loadTrustMaterial(ks, null);
-                }
-
-                builder.setSSLSocketFactory(new SSLConnectionSocketFactory(sslBuilder.build(), hostnameVerifier));
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (KeyManagementException e) {
-                e.printStackTrace();
-            } catch (KeyStoreException e) {
-                e.printStackTrace();
-            } catch (CertificateException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-        HttpGet authorize = new HttpGet(serviceAddress + "/oauth/authorize?client_id=openshift-challenging-client&response_type=token");
-        authorize.setHeader("Authorization", "Basic " + Base64.encodeBase64String(
-                (getUsername() + ':' + Secret.toString(getPassword()))
-                        .getBytes(StandardCharsets.UTF_8)));
+        final HttpClientBuilder builder = HttpClientWithTLSOptionsFactory.getBuilder(uri, caCertData, skipTLSVerify);
+        HttpGet authorize = new HttpGet(oauthServerURL + "/oauth/authorize?client_id=openshift-challenging-client&response_type=token");
+        authorize.setHeader("Authorization", getBasicAuthenticationHeader(getUsername(), getPassword()));
         final CloseableHttpResponse response = builder.build().execute(authorize);
 
         if (response.getStatusLine().getStatusCode() != 302) {
-            throw new IOException("Failed to get an OAuth access token " + response.getStatusLine().getStatusCode());
+            throw new TokenResponseError("The OAuth service didn't respond with a redirection but with '" + response.getStatusLine().getStatusCode() + ": " + response.getStatusLine().getReasonPhrase() + "'");
         }
 
-        String location = response.getFirstHeader("Location").getValue();
-        String parameters = location.substring(location.indexOf('#') + 1);
-        List<NameValuePair> pairs = URLEncodedUtils.parse(parameters, StandardCharsets.UTF_8);
-        Token t = new Token();
-        for (NameValuePair pair : pairs) {
-            if (pair.getName().equals("access_token")) {
-                t.value = pair.getValue();
-            } else if (pair.getName().equals("expires_in")) {
-                t.expire = System.currentTimeMillis() + Long.parseLong(pair.getValue()) * 1000 - 100;
-            }
+        Header location = response.getFirstHeader("Location");
+        if (location == null) {
+            throw new TokenResponseError("The OAuth service didn't respond with location header");
         }
-        return t;
+
+        return extractTokenFromLocation(location.getValue());
     }
 
     @Extension
     public static class DescriptorImpl extends BaseStandardCredentialsDescriptor {
-
         @Override
         public String getDisplayName() {
             return "OpenShift Username and Password";
         }
     }
 
-    private static class Token {
+    public static class Token {
         String value;
         long expire;
     }
 
-    private static TrustStrategy ALWAYS = new TrustStrategy() {
-
-        @Override
-        public boolean isTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
-            return true;
+    public static class TokenResponseError extends Exception {
+        public TokenResponseError(String message) {
+            super(message);
         }
-    };
-
-    private static RedirectStrategy NO_REDIRECT = new RedirectStrategy() {
-        @Override
-        public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) throws ProtocolException {
-            return false;
-        }
-
-        @Override
-        public HttpUriRequest getRedirect(HttpRequest request, HttpResponse response, HttpContext context) throws ProtocolException {
-            return null;
-        }
-    };
+    }
 }
