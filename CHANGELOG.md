@@ -1,16 +1,20 @@
 CHANGELOG
 =========
 
+Master (unreleased)
+-----
+* Fix compatibility with PCT [#4](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/4)
+
 0.3.1
 -----
-* Save OpenShift token between calls
+* Save OpenShift token between calls [#3](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/3)
 * Cache OpenShift token per URL
 * Improve plugin testing
 
 0.3.0
 -----
 * Improve README
-* Bring [ServiceAccountCredential](https://github.com/jenkinsci/kubernetes-plugin/blob/master/src/main/java/org/csanchez/jenkins/plugins/kubernetes/ServiceAccountCredential.java) from kubernetes-plugin.
+* More meaningful credential names [#2](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/2)
 
 
 0.2.0
