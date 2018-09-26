@@ -21,6 +21,11 @@ To run the tests:
 mvn clean test
 ```
 
+## Releasing
+```bash
+mvn release:prepare release:perform
+```
+
 [kubernetes-plugin]:https://github.com/jenkinsci/kubernetes-plugin
 [kubernetes-cli-plugin]:https://github.com/jenkinsci/kubernetes-cli-plugin
 [master-build]: https://ci.jenkins.io/job/Plugins/job/kubernetes-credentials-plugin/job/master/
