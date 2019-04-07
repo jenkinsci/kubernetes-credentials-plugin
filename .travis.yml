@@ -1,0 +1,12 @@
+language: java
+
+jdk:
+  - openjdk8
+
+cache:
+  directories:
+  - $HOME/.m2
+
+after_success:
+- mvn clean test findbugs:check jacoco:report coveralls:report
+
