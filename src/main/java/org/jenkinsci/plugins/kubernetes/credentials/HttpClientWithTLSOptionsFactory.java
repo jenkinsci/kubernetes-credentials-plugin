@@ -66,7 +66,7 @@ public class HttpClientWithTLSOptionsFactory {
     }
 
     /*
-     * Returns a SSLConnectionSocketFactory that will check resonses against a given certificate
+     * Returns a SSLConnectionSocketFactory that will check responses against a given certificate
      */
     private static SSLConnectionSocketFactory getVerifyCertSSLFactory(String hostname, String caCertData) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, IOException, CertificateException {
         final SSLContextBuilder sslBuilder = new SSLContextBuilder();
