@@ -1,6 +1,7 @@
 # Kubernetes Credentials Plugin
 
 [![build-status](https://ci.jenkins.io/buildStatus/icon?job=Plugins/kubernetes-credentials-plugin/master/)][master-build]
+![Jenkins Plugin installs](https://img.shields.io/jenkins/plugin/i/kubernetes-credentials.svg)
 
 Contains classes shared between the [Kubernetes Plugin][kubernetes-plugin] and the
 [Kubernetes CLI Plugin][kubernetes-cli-plugin]:
