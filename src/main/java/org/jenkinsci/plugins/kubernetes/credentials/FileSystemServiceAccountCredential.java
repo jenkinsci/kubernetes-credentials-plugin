@@ -7,6 +7,7 @@ import org.apache.commons.io.FileUtils;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.kohsuke.stapler.DataBoundConstructor;
 
+import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
 
@@ -44,7 +45,6 @@ public class FileSystemServiceAccountCredential extends BaseStandardCredentials
     }
 
     @Override
-    @SuppressFBWarnings("DMI_HARDCODED_ABSOLUTE_FILENAME")
     @Deprecated
     public String getToken(String serviceAddress, String caCertData, boolean skipTlsVerify) {
         return getSecret().getPlainText();
@@ -54,10 +54,9 @@ public class FileSystemServiceAccountCredential extends BaseStandardCredentials
     public static class DescriptorImpl extends BaseStandardCredentialsDescriptor {
 
         @SuppressFBWarnings("DMI_HARDCODED_ABSOLUTE_FILENAME")
-        public DescriptorImpl() {
-            if (!new File(SERVICEACCOUNT_TOKEN_PATH).exists()) {
-                throw new RuntimeException("Jenkins isn't running inside Kubernetes with Admission Controller.");
-            }
+        @Override
+        public boolean isApplicable(CredentialsProvider provider) {
+            return new File(SERVICEACCOUNT_TOKEN_PATH).exists();
         }
 
         @Override
