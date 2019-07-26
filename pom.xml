@@ -10,7 +10,6 @@
   <artifactId>kubernetes-credentials</artifactId>
   <version>0.4.1-SNAPSHOT</version>
   <name>Kubernetes Credentials Plugin</name>
-  <description>Common classes for Kubernetes credentials</description>
   <packaging>hpi</packaging>
 
   <scm>
