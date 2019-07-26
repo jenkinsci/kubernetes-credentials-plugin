@@ -1,0 +1,4 @@
+<?jelly escape-by-default='true'?>
+<div>
+    Common classes for Kubernetes credentials
+</div>
