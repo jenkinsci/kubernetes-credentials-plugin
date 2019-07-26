@@ -4,6 +4,10 @@ CHANGELOG
 Master (unreleased)
 -----
 
+0.4.1
+-----
+* Plugin description should live in index.jelly [#10](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/10)
+
 0.4.0
 -----
 * Fix compatibility with PCT [#4](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/4)
