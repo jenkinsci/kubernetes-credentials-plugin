@@ -1,8 +1,9 @@
 # Kubernetes Credentials Plugin
 
+[![Jenkins Plugin](https://img.shields.io/jenkins/plugin/v/kubernetes-credentials.svg)](https://plugins.jenkins.io/kubernetes-credentials)
 [![travis-ci](https://travis-ci.org/jenkinsci/kubernetes-credentials-plugin.svg?branch=master)](https://travis-ci.org/jenkinsci/kubernetes-credentials-plugin)
 [![Coverage Status](https://coveralls.io/repos/github/jenkinsci/kubernetes-credentials-plugin/badge.svg?branch=master)](https://coveralls.io/github/jenkinsci/kubernetes-credentials-plugin?branch=master)
-![Jenkins Plugin installs](https://img.shields.io/jenkins/plugin/i/kubernetes-credentials.svg)
+[![Jenkins Plugin installs](https://img.shields.io/jenkins/plugin/i/kubernetes-credentials.svg)](https://plugins.jenkins.io/kubernetes-credentials)
 
 Contains classes shared between the [Kubernetes Plugin][kubernetes-plugin] and the
 [Kubernetes CLI Plugin][kubernetes-cli-plugin]:
