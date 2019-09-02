@@ -1,5 +1,8 @@
 package org.jenkinsci.plugins.kubernetes.auth;
 
+import hudson.FilePath;
+import io.fabric8.kubernetes.client.ConfigBuilder;
+
 public class KubernetesAuthCertificate implements KubernetesAuth {
     private final String certificate;
 
@@ -16,6 +19,21 @@ public class KubernetesAuthCertificate implements KubernetesAuth {
 
     public KubernetesAuthCertificate(String certificate, String key) {
         this(certificate, key, null);
+    }
+
+    @Override
+    public String generateKubectlConfigArguments(FilePath workspace) {
+        return null;
+    }
+
+    @Override
+    public ConfigBuilder decorate(ConfigBuilder builder) throws KubernetesAuthException {
+        builder.withClientCertData(certificate);
+        builder.withClientKeyData(key);
+        if (password != null) {
+            builder.withClientKeyPassphrase(password);
+        }
+        return builder;
     }
 
     public String getCertificate() {
