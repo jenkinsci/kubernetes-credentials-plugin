@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.kubernetes.auth;
 
 import hudson.FilePath;
+import io.fabric8.kubernetes.api.model.AuthInfoBuilder;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 
 public class KubernetesAuthUsernamePassword implements KubernetesAuth {
@@ -16,10 +17,9 @@ public class KubernetesAuthUsernamePassword implements KubernetesAuth {
     }
 
     @Override
-    public String generateKubectlConfigArguments(FilePath workspace) {
-        return "--username=" + getUsername() + " --password=" + getPassword();
+    public void decorate(AuthInfoBuilder builder) {
+        builder.withUsername(username).withPassword(password);
     }
-
     @Override
     public ConfigBuilder decorate(ConfigBuilder builder) throws KubernetesAuthException {
         builder.withUsername(getUsername());

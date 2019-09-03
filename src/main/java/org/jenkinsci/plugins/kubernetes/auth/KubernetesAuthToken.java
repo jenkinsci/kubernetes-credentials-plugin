@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.kubernetes.auth;
 
 import hudson.FilePath;
+import io.fabric8.kubernetes.api.model.AuthInfoBuilder;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 
 public class KubernetesAuthToken implements KubernetesAuth {
@@ -11,10 +12,9 @@ public class KubernetesAuthToken implements KubernetesAuth {
     }
 
     @Override
-    public String generateKubectlConfigArguments(FilePath workspace) {
-        return "--token " + getToken();
+    public void decorate(AuthInfoBuilder builder) {
+        builder.withToken(token);
     }
-
     @Override
     public ConfigBuilder decorate(ConfigBuilder builder) throws KubernetesAuthException {
         builder.withOauthToken(getToken());

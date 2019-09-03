@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.kubernetes.auth;
 
 import hudson.FilePath;
+import io.fabric8.kubernetes.api.model.AuthInfoBuilder;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 
@@ -14,8 +15,8 @@ public class KubernetesAuthKubeconfig implements KubernetesAuth {
     }
 
     @Override
-    public String generateKubectlConfigArguments(FilePath workspace) {
-        return "--config ";
+    public void decorate(AuthInfoBuilder builder) {
+        //
     }
 
     @Override
