@@ -36,7 +36,7 @@ public class StandardCertificateCredentialsTokenSource extends AuthenticationTok
             );
 
         } catch (KeyStoreException | CertificateEncodingException | UnrecoverableKeyException | NoSuchAlgorithmException e) {
-            throw new AuthenticationTokenException(e.getMessage());
+            throw new AuthenticationTokenException(e);
         }
     }
 }

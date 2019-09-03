@@ -22,7 +22,7 @@ public class FileCredentialsTokenSource extends AuthenticationTokenSource<Kubern
         try (InputStream is = credential.getContent()) {
             return new KubernetesAuthKubeconfig(IOUtils.toString(is, StandardCharsets.UTF_8));
         } catch (IOException e) {
-            throw new AuthenticationTokenException(e.getMessage());
+            throw new AuthenticationTokenException(e);
         }
     }
 }

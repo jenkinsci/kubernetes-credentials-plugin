@@ -23,7 +23,7 @@ public class KubernetesAuthKubeconfig implements KubernetesAuth {
         try {
             return new ConfigBuilder(Config.fromKubeconfig(getKubeconfig()));
         } catch (IOException e) {
-            throw new KubernetesAuthException(e.getMessage());
+            throw new KubernetesAuthException(e);
         }
     }
 
