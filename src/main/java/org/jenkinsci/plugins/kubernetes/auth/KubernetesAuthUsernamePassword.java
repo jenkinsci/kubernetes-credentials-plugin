@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.kubernetes.auth;
 
-import hudson.FilePath;
 import io.fabric8.kubernetes.api.model.AuthInfoBuilder;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 
