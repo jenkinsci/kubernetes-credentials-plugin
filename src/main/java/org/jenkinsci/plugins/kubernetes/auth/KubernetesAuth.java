@@ -1,10 +1,10 @@
 package org.jenkinsci.plugins.kubernetes.auth;
 
-import io.fabric8.kubernetes.api.model.AuthInfoBuilder;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 
 public interface KubernetesAuth {
-    void decorate(AuthInfoBuilder builder);
-
     ConfigBuilder decorate(ConfigBuilder builder) throws KubernetesAuthException;
+
+    String buildKubeConfig(String serverUrl, String caCertificate) throws JsonProcessingException;
 }
