@@ -6,10 +6,8 @@ import io.fabric8.kubernetes.api.model.Cluster;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.jenkinsci.plugins.kubernetes.credentials.Utils;
 
-public class KubeConfigBuilder {
-    public void decorate(AuthInfoBuilder authInfoBuilder) {
-
-    }
+abstract class AbstractKubernetesAuth implements KubernetesAuth {
+    abstract void decorate(AuthInfoBuilder authInfoBuilder);
 
     public String buildKubeConfig(String serverUrl, String caCertificate) throws JsonProcessingException {
         io.fabric8.kubernetes.api.model.ConfigBuilder configBuilder = new io.fabric8.kubernetes.api.model.ConfigBuilder();

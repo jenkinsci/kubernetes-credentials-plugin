@@ -3,7 +3,7 @@ package org.jenkinsci.plugins.kubernetes.auth;
 import io.fabric8.kubernetes.api.model.AuthInfoBuilder;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 
-public class KubernetesAuthToken extends KubeConfigBuilder implements KubernetesAuth {
+public class KubernetesAuthToken extends AbstractKubernetesAuth implements KubernetesAuth {
     private final String token;
 
     public KubernetesAuthToken(String token) {
