@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.kubernetes.credentials;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import hudson.Extension;
 import jenkins.authentication.tokens.api.AuthenticationTokenException;
 import jenkins.authentication.tokens.api.AuthenticationTokenSource;
 import org.apache.commons.io.IOUtils;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+@Extension
 public class FileCredentialsTokenSource extends AuthenticationTokenSource<KubernetesAuthKubeconfig, FileCredentials> {
     public FileCredentialsTokenSource() {
         super(KubernetesAuthKubeconfig.class, FileCredentials.class);
