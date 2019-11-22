@@ -1,5 +1,13 @@
 package org.jenkinsci.plugins.kubernetes.credentials;
 
+import org.apache.commons.codec.binary.Base64;
+
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
+
 public abstract class Utils {
 
     public static String wrapWithMarker(String begin, String end, String encodedBody) {
@@ -25,5 +33,17 @@ public abstract class Utils {
             return wrapWithMarker(BEGIN_PRIVATE_KEY, END_PRIVATE_KEY, keyData);
         }
         return keyData;
+    }
+
+    public static String encodeBase64(String s) {
+        return Base64.encodeBase64String(s.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static String encodeCertificate(Certificate certificate) throws CertificateEncodingException {
+        return encodeBase64(wrapCertificate(Base64.encodeBase64String(certificate.getEncoded())));
+    }
+
+    public static String encodeKey(Key key) {
+        return encodeBase64(wrapPrivateKey(Base64.encodeBase64String(key.getEncoded())));
     }
 }
