@@ -1,10 +1,9 @@
-package org.jenkinsci.plugins.kubernetes.credentials;
+package org.jenkinsci.plugins.kubernetes.tokensource;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
-import jenkins.authentication.tokens.api.AuthenticationTokenException;
 import jenkins.authentication.tokens.api.AuthenticationTokenSource;
-import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuthToken;
+import org.jenkinsci.plugins.kubernetes.auth.impl.KubernetesAuthToken;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 
 @Extension
@@ -15,7 +14,7 @@ public class StringCredentialsTokenSource extends AuthenticationTokenSource<Kube
 
     @NonNull
     @Override
-    public KubernetesAuthToken convert(@NonNull StringCredentials credential) throws AuthenticationTokenException {
-        return new KubernetesAuthToken(credential.getSecret().getPlainText());
+    public KubernetesAuthToken convert(@NonNull StringCredentials credential) {
+        return new KubernetesAuthToken((serviceAddress, caCertData, skipTlsVerify) -> credential.getSecret().getPlainText());
     }
 }

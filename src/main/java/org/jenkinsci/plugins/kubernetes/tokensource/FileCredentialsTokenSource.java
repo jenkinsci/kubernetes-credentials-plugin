@@ -1,11 +1,11 @@
-package org.jenkinsci.plugins.kubernetes.credentials;
+package org.jenkinsci.plugins.kubernetes.tokensource;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import jenkins.authentication.tokens.api.AuthenticationTokenException;
 import jenkins.authentication.tokens.api.AuthenticationTokenSource;
 import org.apache.commons.io.IOUtils;
-import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuthKubeconfig;
+import org.jenkinsci.plugins.kubernetes.auth.impl.KubernetesAuthKubeconfig;
 import org.jenkinsci.plugins.plaincredentials.FileCredentials;
 
 import java.io.IOException;
