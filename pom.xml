@@ -10,6 +10,7 @@
   <artifactId>kubernetes-credentials</artifactId>
   <version>${revision}${changelist}</version>
   <name>Kubernetes Credentials Plugin</name>
+  <url>https://github.com/jenkinsci/kubernetes-credentials-plugin/</url>
   <packaging>hpi</packaging>
 
   <scm>
