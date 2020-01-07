@@ -2,9 +2,9 @@ package org.jenkinsci.plugins.kubernetes.auth.impl;
 
 import io.fabric8.kubernetes.api.model.Config;
 import io.fabric8.kubernetes.client.utils.Serialization;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.compress.utils.IOUtils;
 import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuthConfig;
-import org.jenkinsci.plugins.kubernetes.credentials.Utils;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
 
 public class KubernetesAuthKeystoreTest {
 
@@ -30,13 +30,13 @@ public class KubernetesAuthKeystoreTest {
             );
 
             // verifying class doesn't modify cert and key data, so not using here
-            assertEquals(Utils.encodeBase64(readFile("test.crt")), c.getUsers().get(0).getUser().getClientCertificateData());
-            assertEquals(Utils.encodeBase64(readFile("test.key")), c.getUsers().get(0).getUser().getClientKeyData());
+            assertArrayEquals(readFile("test.crt"), Base64.decodeBase64(c.getUsers().get(0).getUser().getClientCertificateData()));
+            assertArrayEquals(readFile("test.key"), Base64.decodeBase64(c.getUsers().get(0).getUser().getClientKeyData()));
         }
     }
 
-    private String readFile(String name) throws IOException {
-        return new String(IOUtils.toByteArray(getClass().getResourceAsStream(name)));
+    private byte[] readFile(String name) throws IOException {
+        return IOUtils.toByteArray(getClass().getResourceAsStream(name));
     }
 
     private static KeyStore loadKeyStore(InputStream inputStream, char[] password) throws CertificateException, NoSuchAlgorithmException, IOException, KeyStoreException {
