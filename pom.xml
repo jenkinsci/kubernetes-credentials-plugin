@@ -8,7 +8,7 @@
 
   <groupId>org.jenkinsci.plugins</groupId>
   <artifactId>kubernetes-credentials</artifactId>
-  <version>${revision}${changelist}</version>
+  <version>0.5.0</version>
   <name>Kubernetes Credentials Plugin</name>
   <url>https://github.com/jenkinsci/kubernetes-credentials-plugin/</url>
   <packaging>hpi</packaging>
@@ -17,7 +17,7 @@
     <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/jenkinsci/${project.artifactId}-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
-    <tag>${scmTag}</tag>
+    <tag>kubernetes-credentials-0.5.0</tag>
   </scm>
 
   <licenses>
