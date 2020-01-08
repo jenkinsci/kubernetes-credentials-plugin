@@ -36,7 +36,8 @@ public class KubernetesAuthKeystoreTest {
     }
 
     private String readFile(String name) throws IOException {
-        return new String(IOUtils.toByteArray(getClass().getResourceAsStream(name)));
+        // Replacement is needed for getting the right content on Windows platform
+        return new String(IOUtils.toByteArray(getClass().getResourceAsStream(name))).replaceAll("\\r\\n", "\n");
     }
 
     private static KeyStore loadKeyStore(InputStream inputStream, char[] password) throws CertificateException, NoSuchAlgorithmException, IOException, KeyStoreException {
