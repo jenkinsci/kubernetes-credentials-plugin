@@ -4,6 +4,13 @@ CHANGELOG
 Master (unreleased)
 -----
 
+0.5.0
+-----
+* Update URL for plugins.jenkins.io [#14](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/14)
+* Enable incrementals support [#13](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/13)
+* enable support of AuthenticationTokens, add Google OAuth Credentials Token Source [#12](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/12)
+* README: Add Jenkins plugin site badges[#11](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/11)
+
 0.4.1
 -----
 * Plugin description should live in index.jelly [#10](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/10)
