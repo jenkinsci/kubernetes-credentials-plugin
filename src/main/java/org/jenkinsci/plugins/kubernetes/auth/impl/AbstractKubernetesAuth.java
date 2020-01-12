@@ -13,6 +13,11 @@ abstract class AbstractKubernetesAuth implements KubernetesAuth {
     abstract AuthInfoBuilder decorate(AuthInfoBuilder builder, KubernetesAuthConfig config) throws KubernetesAuthException;
 
     public String buildKubeConfig(KubernetesAuthConfig config) throws JsonProcessingException, KubernetesAuthException {
+        io.fabric8.kubernetes.api.model.ConfigBuilder configBuilder = buildConfigBuilder(config, "k8s", "k8s", "cluster-admin");
+        return SerializationUtils.getMapper().writeValueAsString(configBuilder.build());
+    }
+
+    public io.fabric8.kubernetes.api.model.ConfigBuilder buildConfigBuilder(KubernetesAuthConfig config, String context, String clusterName, String username) throws KubernetesAuthException {
         io.fabric8.kubernetes.api.model.ConfigBuilder configBuilder = new io.fabric8.kubernetes.api.model.ConfigBuilder();
         // setup cluster
         Cluster cluster = new Cluster();
@@ -24,26 +29,26 @@ abstract class AbstractKubernetesAuth implements KubernetesAuth {
         cluster.setInsecureSkipTlsVerify(config.isSkipTlsVerify());
         configBuilder
                 .addNewCluster()
-                    .withName("k8s")
+                    .withName(clusterName)
                     .withCluster(cluster)
                 .endCluster();
 
         // setup user (class-specific)
         configBuilder
                 .addNewUser()
-                .withName("cluster-admin")
+                .withName(username)
                     .withUser(decorate(new AuthInfoBuilder(), config).build())
                 .endUser();
         // setup context
         configBuilder
                 .addNewContext()
-                    .withName("k8s")
+                    .withName(context)
                     .withNewContext()
-                        .withCluster("k8s")
-                        .withUser("cluster-admin")
+                        .withCluster(clusterName)
+                        .withUser(username)
                     .endContext()
                 .endContext();
-        return SerializationUtils.getMapper().writeValueAsString(configBuilder.build());
+        return configBuilder;
     }
 
 }

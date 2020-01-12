@@ -23,4 +23,5 @@ public interface KubernetesAuth {
      * @throws KubernetesAuthException if something fails while dealing with credentials
      */
     String buildKubeConfig(KubernetesAuthConfig config) throws JsonProcessingException, KubernetesAuthException;
+    io.fabric8.kubernetes.api.model.ConfigBuilder buildConfigBuilder(KubernetesAuthConfig config,String context,String clusterName,String username) throws KubernetesAuthException;
 }
