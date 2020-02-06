@@ -26,7 +26,9 @@ abstract class AbstractKubernetesAuth implements KubernetesAuth {
         if (caCertificate != null && !caCertificate.isEmpty()) {
             cluster.setCertificateAuthorityData(Utils.encodeBase64(Utils.wrapCertificate(caCertificate)));
         }
-        cluster.setInsecureSkipTlsVerify(config.isSkipTlsVerify());
+        if (config.isSkipTlsVerify()) {
+            cluster.setInsecureSkipTlsVerify(config.isSkipTlsVerify());
+        }
         configBuilder
                 .addNewCluster()
                     .withName(clusterName)
@@ -48,6 +50,7 @@ abstract class AbstractKubernetesAuth implements KubernetesAuth {
                         .withUser(username)
                     .endContext()
                 .endContext();
+        configBuilder.withCurrentContext(context);
         return configBuilder;
     }
 
