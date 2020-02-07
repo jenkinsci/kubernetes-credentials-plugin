@@ -4,6 +4,14 @@ CHANGELOG
 Master (unreleased)
 -----
 
+0.6.2
+-----
+* [JENKINS-60798] Current context should be set [#19](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/19)
+
+0.6.1
+-----
+*Release failed*
+
 0.6.0
 -----
 * Give access to ConfigBuilder [#17](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/17)
