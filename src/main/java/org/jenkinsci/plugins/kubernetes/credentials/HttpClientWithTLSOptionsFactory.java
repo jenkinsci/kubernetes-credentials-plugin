@@ -87,7 +87,7 @@ public class HttpClientWithTLSOptionsFactory {
             } else if (caCertData != null) {
                 builder.setSSLSocketFactory(getVerifyCertSSLFactory(uri.getHost(), caCertData));
             }
-        } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException | IOException e) {
+        } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException | IOException | IllegalArgumentException e) {
             throw new TLSConfigurationError(e);
         }
 
