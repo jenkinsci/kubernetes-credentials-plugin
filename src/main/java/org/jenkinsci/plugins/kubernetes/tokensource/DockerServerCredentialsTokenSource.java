@@ -7,7 +7,7 @@ import jenkins.authentication.tokens.api.AuthenticationTokenSource;
 import org.jenkinsci.plugins.docker.commons.credentials.DockerServerCredentials;
 import org.jenkinsci.plugins.kubernetes.auth.impl.KubernetesAuthCertificate;
 
-@Extension
+@Extension(optional = true)
 public class DockerServerCredentialsTokenSource extends AuthenticationTokenSource<KubernetesAuthCertificate, DockerServerCredentials> {
     public DockerServerCredentialsTokenSource() { super(KubernetesAuthCertificate.class, DockerServerCredentials.class); }
 

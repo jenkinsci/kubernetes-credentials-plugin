@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-@Extension
+@Extension(optional = true)
 public class FileCredentialsTokenSource extends AuthenticationTokenSource<KubernetesAuthKubeconfig, FileCredentials> {
     public FileCredentialsTokenSource() {
         super(KubernetesAuthKubeconfig.class, FileCredentials.class);

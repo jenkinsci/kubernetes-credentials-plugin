@@ -13,7 +13,7 @@ import java.util.Collections;
 /**
  * Converts {@link GoogleRobotCredentials} to {@link String} token.
  */
-@Extension
+@Extension(optional = true)
 public class GoogleRobotCredentialsTokenSource extends AuthenticationTokenSource<KubernetesAuthToken, GoogleRobotCredentials>  {
     public GoogleRobotCredentialsTokenSource() {
         super(KubernetesAuthToken.class, GoogleRobotCredentials.class);

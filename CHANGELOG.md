@@ -4,6 +4,13 @@ CHANGELOG
 Master (unreleased)
 -----
 
+0.7.0
+-----
+* Some plugins could be optional [#20](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/20)
+* Compatibility with Jenkins 2.235 [#22](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/22)
+* Delete obsolete OpenShiftTokenCredentialImpl/credentials.jelly [#23](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/23)
+
+
 0.6.2
 -----
 * [JENKINS-60798] Current context should be set [#19](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/19)
