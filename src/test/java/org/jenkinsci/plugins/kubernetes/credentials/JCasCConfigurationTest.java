@@ -32,10 +32,13 @@ public class JCasCConfigurationTest extends RoundTripAbstractTest {
         OpenShiftBearerTokenCredentialImpl openShiftBearerTokenCredential = creds1.get(0);
         assertThat(openShiftBearerTokenCredential.getUsername(), is("foobar"));
         assertThat(openShiftBearerTokenCredential.getPassword().getPlainText(), is ("bazqux"));
+        assertThat(openShiftBearerTokenCredential.getId(), is("ocp-cred"));
+        assertThat(openShiftBearerTokenCredential.getDescription(), is("OCP u/p cred"));
+        assertThat(openShiftBearerTokenCredential.getScope(), is(CredentialsScope.GLOBAL));
     }
 
     @Override
     protected String stringInLogExpected() {
-        return null;
+        return "OpenShiftBearerTokenCredentialImpl#password";
     }
 }
