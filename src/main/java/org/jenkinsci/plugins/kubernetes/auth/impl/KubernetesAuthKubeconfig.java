@@ -32,6 +32,7 @@ public class KubernetesAuthKubeconfig implements KubernetesAuth {
         }
     }
 
+    // Add support for client-certificate-data and client-key-data
     public io.fabric8.kubernetes.api.model.ConfigBuilder buildConfigBuilder(KubernetesAuthConfig config, String context, String clusterName, String username) throws KubernetesAuthException {
         try {
             io.fabric8.kubernetes.api.model.Config kubeConfig = KubeConfigUtils.parseConfigFromString(getKubeconfig());
