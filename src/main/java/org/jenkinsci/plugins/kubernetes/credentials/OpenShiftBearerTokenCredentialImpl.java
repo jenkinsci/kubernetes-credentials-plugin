@@ -98,20 +98,20 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
     /*
      * Return the previously stored Token or ask for a new one
      */
-    public String getToken(String oauthServerURL, String caCertData, boolean skipTlsVerify) throws IOException {
-        Token token = this.tokenCache.get(oauthServerURL);
+    public String getToken(String apiServerURL, String caCertData, boolean skipTlsVerify) throws IOException {
+        Token token = this.tokenCache.get(apiServerURL);
         if (token == null || System.currentTimeMillis() > token.expire) {
             try {
-                token = refreshToken(oauthServerURL, caCertData, skipTlsVerify);
+                token = refreshToken(apiServerURL, caCertData, skipTlsVerify);
             } catch (HttpClientWithTLSOptionsFactory.TLSConfigurationError e) {
                 throw new IOException("Could not configure SSL Factory in HttpClientWithTLSOptionsFactory: " + e.getMessage(), e);
             } catch (URISyntaxException e) {
-                throw new IOException("The OAuth server URL was invalid ('" + oauthServerURL + "'): " + e.getMessage(), e);
+                throw new IOException("The OAuth server URL was invalid ('" + apiServerURL + "'): " + e.getMessage(), e);
             } catch (TokenResponseError e) {
                 throw new IOException("The response from the OAuth server was invalid: " + e.getMessage(), e);
             }
 
-            this.tokenCache.put(oauthServerURL, token);
+            this.tokenCache.put(apiServerURL, token);
         }
 
         return token.value;
@@ -144,8 +144,8 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
     private String getOauthServerUrl(String apiServerURL, String caCertData, boolean skipTLSVerify) throws URISyntaxException, IOException, HttpClientWithTLSOptionsFactory.TLSConfigurationError {
         URI uri = new URI(apiServerURL);
         final HttpClientBuilder builder = HttpClientWithTLSOptionsFactory.getBuilder(uri, caCertData, skipTLSVerify);
-        HttpGet authorize = new HttpGet(apiServerURL + "/.well-known/oauth-authorization-server");
-        final CloseableHttpResponse response = builder.build().execute(authorize);
+        HttpGet discover = new HttpGet(apiServerURL + "/.well-known/oauth-authorization-server");
+        final CloseableHttpResponse response = builder.build().execute(discover);
         return new JSONObject(EntityUtils.toString(response.getEntity())).getString("authorization_endpoint");
     }
 

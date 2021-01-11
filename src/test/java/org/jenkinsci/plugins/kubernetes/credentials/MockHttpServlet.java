@@ -1,10 +1,14 @@
 package org.jenkinsci.plugins.kubernetes.credentials;
 
+import org.eclipse.jetty.server.Request;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Max Laverse
@@ -28,7 +32,41 @@ public class MockHttpServlet extends HttpServlet {
                 response.sendRedirect("http://my-service/#access_token=1235&expires_in=86400");
                 break;
             default:
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,"Bad test: unknown path " + request.getPathInfo());
+                Pattern r = Pattern.compile("(.*)/.well-known/oauth-authorization-server");
+                // Now create matcher object.
+                Matcher m = r.matcher(request.getPathInfo());
+                if (m.find()) {
+                    String responseToClient = "{\n" +
+                            "  \"issuer\": \"" + ((Request) request).getRootURL() + "\",\n" +
+                            "  \"authorization_endpoint\": \"" + ((Request) request).getRootURL() + "/" + m.group(1) + "/oauth/authorize\",\n" +
+                            "  \"token_endpoint\": \"" + ((Request) request).getRootURL() + "/oauth/token\",\n" +
+                            "  \"scopes_supported\": [\n" +
+                            "    \"user:check-access\",\n" +
+                            "    \"user:full\",\n" +
+                            "    \"user:info\",\n" +
+                            "    \"user:list-projects\",\n" +
+                            "    \"user:list-scoped-projects\"\n" +
+                            "  ],\n" +
+                            "  \"response_types_supported\": [\n" +
+                            "    \"code\",\n" +
+                            "    \"token\"\n" +
+                            "  ],\n" +
+                            "  \"grant_types_supported\": [\n" +
+                            "    \"authorization_code\",\n" +
+                            "    \"implicit\"\n" +
+                            "  ],\n" +
+                            "  \"code_challenge_methods_supported\": [\n" +
+                            "    \"plain\",\n" +
+                            "    \"S256\"\n" +
+                            "  ]\n" +
+                            "}";
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    response.getWriter().write(responseToClient);
+                    response.getWriter().flush();
+                    response.getWriter().close();
+                    return;
+                }
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Bad test: unknown path " + request.getPathInfo());
                 break;
         }
     }
