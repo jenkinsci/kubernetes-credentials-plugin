@@ -11,6 +11,8 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
@@ -118,11 +120,12 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
     /*
      * Ask for a new token by calling the OpenShift OAuth server
      */
-    private synchronized Token refreshToken(String oauthServerURL, String caCertData, boolean skipTLSVerify) throws URISyntaxException, HttpClientWithTLSOptionsFactory.TLSConfigurationError, TokenResponseError, IOException {
+    private synchronized Token refreshToken(String apiServerURL, String caCertData, boolean skipTLSVerify) throws URISyntaxException, HttpClientWithTLSOptionsFactory.TLSConfigurationError, TokenResponseError, IOException {
+        String oauthServerURL = getOauthServerUrl(apiServerURL, caCertData, skipTLSVerify);
         URI uri = new URI(oauthServerURL);
 
         final HttpClientBuilder builder = HttpClientWithTLSOptionsFactory.getBuilder(uri, caCertData, skipTLSVerify);
-        HttpGet authorize = new HttpGet(oauthServerURL + "/oauth/authorize?client_id=openshift-challenging-client&response_type=token");
+        HttpGet authorize = new HttpGet(oauthServerURL + "?client_id=openshift-challenging-client&response_type=token");
         authorize.setHeader("Authorization", getBasicAuthenticationHeader(getUsername(), getPassword()));
         final CloseableHttpResponse response = builder.build().execute(authorize);
 
@@ -136,6 +139,14 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
         }
 
         return extractTokenFromLocation(location.getValue());
+    }
+
+    private String getOauthServerUrl(String apiServerURL, String caCertData, boolean skipTLSVerify) throws URISyntaxException, IOException, HttpClientWithTLSOptionsFactory.TLSConfigurationError {
+        URI uri = new URI(apiServerURL);
+        final HttpClientBuilder builder = HttpClientWithTLSOptionsFactory.getBuilder(uri, caCertData, skipTLSVerify);
+        HttpGet authorize = new HttpGet(apiServerURL + "/.well-known/oauth-authorization-server");
+        final CloseableHttpResponse response = builder.build().execute(authorize);
+        return new JSONObject(EntityUtils.toString(response.getEntity())).getString("authorization_endpoint");
     }
 
     @Extension
