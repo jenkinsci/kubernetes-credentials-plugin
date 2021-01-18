@@ -4,6 +4,7 @@ import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import hudson.Extension;
 import hudson.util.Secret;
+import net.sf.json.JSONObject;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.Header;
 import org.apache.http.NameValuePair;
@@ -12,7 +13,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
@@ -146,7 +146,7 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
         final HttpClientBuilder builder = HttpClientWithTLSOptionsFactory.getBuilder(uri, caCertData, skipTLSVerify);
         HttpGet discover = new HttpGet(apiServerURL + "/.well-known/oauth-authorization-server");
         final CloseableHttpResponse response = builder.build().execute(discover);
-        return new JSONObject(EntityUtils.toString(response.getEntity())).getString("authorization_endpoint");
+        return JSONObject.fromObject(EntityUtils.toString(response.getEntity())).getString("authorization_endpoint");
     }
 
     @Extension
