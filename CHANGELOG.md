@@ -4,6 +4,12 @@ CHANGELOG
 Master (unreleased)
 -----
 
+0.8.0
+-----
+* Add JCasC test to this plugin [#24](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/24)
+* Openshift oauth discover authorization_endpoint [#26](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/26)
+
+
 0.7.0
 -----
 * Some plugins could be optional [#20](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/20)
