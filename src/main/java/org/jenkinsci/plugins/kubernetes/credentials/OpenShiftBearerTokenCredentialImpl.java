@@ -4,6 +4,7 @@ import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import hudson.Extension;
 import hudson.util.Secret;
+import net.sf.json.JSONObject;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.Header;
 import org.apache.http.NameValuePair;
@@ -11,6 +12,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
@@ -96,20 +98,20 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
     /*
      * Return the previously stored Token or ask for a new one
      */
-    public String getToken(String oauthServerURL, String caCertData, boolean skipTlsVerify) throws IOException {
-        Token token = this.tokenCache.get(oauthServerURL);
+    public String getToken(String apiServerURL, String caCertData, boolean skipTlsVerify) throws IOException {
+        Token token = this.tokenCache.get(apiServerURL);
         if (token == null || System.currentTimeMillis() > token.expire) {
             try {
-                token = refreshToken(oauthServerURL, caCertData, skipTlsVerify);
+                token = refreshToken(apiServerURL, caCertData, skipTlsVerify);
             } catch (HttpClientWithTLSOptionsFactory.TLSConfigurationError e) {
                 throw new IOException("Could not configure SSL Factory in HttpClientWithTLSOptionsFactory: " + e.getMessage(), e);
             } catch (URISyntaxException e) {
-                throw new IOException("The OAuth server URL was invalid ('" + oauthServerURL + "'): " + e.getMessage(), e);
+                throw new IOException("The OAuth server URL was invalid ('" + apiServerURL + "'): " + e.getMessage(), e);
             } catch (TokenResponseError e) {
                 throw new IOException("The response from the OAuth server was invalid: " + e.getMessage(), e);
             }
 
-            this.tokenCache.put(oauthServerURL, token);
+            this.tokenCache.put(apiServerURL, token);
         }
 
         return token.value;
@@ -118,11 +120,12 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
     /*
      * Ask for a new token by calling the OpenShift OAuth server
      */
-    private synchronized Token refreshToken(String oauthServerURL, String caCertData, boolean skipTLSVerify) throws URISyntaxException, HttpClientWithTLSOptionsFactory.TLSConfigurationError, TokenResponseError, IOException {
+    private synchronized Token refreshToken(String apiServerURL, String caCertData, boolean skipTLSVerify) throws URISyntaxException, HttpClientWithTLSOptionsFactory.TLSConfigurationError, TokenResponseError, IOException {
+        String oauthServerURL = getOauthServerUrl(apiServerURL, caCertData, skipTLSVerify);
         URI uri = new URI(oauthServerURL);
 
         final HttpClientBuilder builder = HttpClientWithTLSOptionsFactory.getBuilder(uri, caCertData, skipTLSVerify);
-        HttpGet authorize = new HttpGet(oauthServerURL + "/oauth/authorize?client_id=openshift-challenging-client&response_type=token");
+        HttpGet authorize = new HttpGet(oauthServerURL + "?client_id=openshift-challenging-client&response_type=token");
         authorize.setHeader("Authorization", getBasicAuthenticationHeader(getUsername(), getPassword()));
         final CloseableHttpResponse response = builder.build().execute(authorize);
 
@@ -136,6 +139,14 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
         }
 
         return extractTokenFromLocation(location.getValue());
+    }
+
+    private String getOauthServerUrl(String apiServerURL, String caCertData, boolean skipTLSVerify) throws URISyntaxException, IOException, HttpClientWithTLSOptionsFactory.TLSConfigurationError {
+        URI uri = new URI(apiServerURL);
+        final HttpClientBuilder builder = HttpClientWithTLSOptionsFactory.getBuilder(uri, caCertData, skipTLSVerify);
+        HttpGet discover = new HttpGet(apiServerURL + "/.well-known/oauth-authorization-server");
+        final CloseableHttpResponse response = builder.build().execute(discover);
+        return JSONObject.fromObject(EntityUtils.toString(response.getEntity())).getString("authorization_endpoint");
     }
 
     @Extension
