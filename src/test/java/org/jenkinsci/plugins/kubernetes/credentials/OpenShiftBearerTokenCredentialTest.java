@@ -96,13 +96,12 @@ public class OpenShiftBearerTokenCredentialTest {
     }
 
     @Test
-    public void testValidTokenExtraction() throws OpenShiftBearerTokenCredentialImpl.TokenResponseError {
+    public void testTokenExtractionEarlyExpire() throws OpenShiftBearerTokenCredentialImpl.TokenResponseError {
         OpenShiftBearerTokenCredentialImpl.Token token = OpenShiftBearerTokenCredentialImpl.extractTokenFromLocation("https://master.cluster.local:8443/oauth/token/display#access_token=VO4dAgNGLnX5MGYu_wXau8au2Rw0QAqnwq8AtrLkMfU&expires_in=86400&token_type=bearer");
         assertEquals("VO4dAgNGLnX5MGYu_wXau8au2Rw0QAqnwq8AtrLkMfU", token.value);
 
         // We are optimistic here and expect the test to run in less than a second.
-        // TODO: Improve
-        assertEquals(86100000, token.expire - System.currentTimeMillis());
+        assertEquals(86400 - OpenShiftBearerTokenCredentialImpl.EARLY_EXPIRE_DELAY_SEC, (token.expire - System.currentTimeMillis())/1000);
     }
 
     @Test
