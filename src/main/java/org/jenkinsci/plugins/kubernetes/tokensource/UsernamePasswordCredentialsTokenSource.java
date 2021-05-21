@@ -24,7 +24,7 @@ public class UsernamePasswordCredentialsTokenSource extends AuthenticationTokenS
         } else {
             return new KubernetesAuthUsernamePassword(
                     credential.getUsername(),
-                    credential.getPassword().getPlainText()
+                    credential.getPassword()
             );
         }
     }

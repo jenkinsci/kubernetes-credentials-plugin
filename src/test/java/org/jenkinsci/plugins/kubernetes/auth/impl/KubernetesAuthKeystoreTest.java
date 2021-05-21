@@ -1,11 +1,14 @@
 package org.jenkinsci.plugins.kubernetes.auth.impl;
 
+import hudson.util.Secret;
 import io.fabric8.kubernetes.api.model.Config;
 import io.fabric8.kubernetes.client.utils.Serialization;
 import org.apache.commons.compress.utils.IOUtils;
 import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuthConfig;
 import org.jenkinsci.plugins.kubernetes.credentials.Utils;
+import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +20,8 @@ import java.security.cert.CertificateException;
 import static org.junit.Assert.assertEquals;
 
 public class KubernetesAuthKeystoreTest {
+    @Rule
+    public JenkinsRule r = new JenkinsRule();
 
     protected static final String PASSPHRASE = "test";
 
@@ -24,7 +29,7 @@ public class KubernetesAuthKeystoreTest {
     public void createConfig() throws Exception {
         try (InputStream resourceAsStream = getClass().getResourceAsStream("kubernetes.pkcs12")) {
             KeyStore keyStore = loadKeyStore(resourceAsStream, PASSPHRASE.toCharArray());
-            KubernetesAuthKeystore auth = new KubernetesAuthKeystore(keyStore, PASSPHRASE);
+            KubernetesAuthKeystore auth = new KubernetesAuthKeystore(keyStore, Secret.fromString(PASSPHRASE));
             Config c = Serialization.yamlMapper().readValue(
                     auth.buildKubeConfig(new KubernetesAuthConfig("serverUrl", "caCertificate", false)), Config.class
             );

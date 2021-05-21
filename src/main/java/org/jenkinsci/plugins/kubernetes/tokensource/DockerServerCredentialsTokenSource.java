@@ -14,6 +14,6 @@ public class DockerServerCredentialsTokenSource extends AuthenticationTokenSourc
     @NonNull
     @Override
     public KubernetesAuthCertificate convert(@NonNull DockerServerCredentials credential) throws AuthenticationTokenException {
-        return new KubernetesAuthCertificate(credential.getClientCertificate(), credential.getClientKey());
+        return new KubernetesAuthCertificate(credential.getClientCertificate(), credential.getClientKeySecret());
     }
 }

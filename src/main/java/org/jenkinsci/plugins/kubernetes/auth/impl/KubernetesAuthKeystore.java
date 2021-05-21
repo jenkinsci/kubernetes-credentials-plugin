@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.kubernetes.auth.impl;
 
+import hudson.util.Secret;
 import io.fabric8.kubernetes.api.model.AuthInfoBuilder;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuth;
@@ -21,9 +22,9 @@ import java.security.cert.CertificateEncodingException;
 public class KubernetesAuthKeystore extends AbstractKubernetesAuth implements KubernetesAuth {
     private KeyStore keyStore;
 
-    private final String passPhrase;
+    private final Secret passPhrase;
 
-    public KubernetesAuthKeystore(@Nonnull KeyStore keyStore, String passPhrase) {
+    public KubernetesAuthKeystore(@Nonnull KeyStore keyStore, Secret passPhrase) {
         this.keyStore = keyStore;
         this.passPhrase = passPhrase;
     }
@@ -33,7 +34,7 @@ public class KubernetesAuthKeystore extends AbstractKubernetesAuth implements Ku
         try {
             String alias = keyStore.aliases().nextElement();
             // Get private key using passphrase
-            Key key = keyStore.getKey(alias, passPhrase.toCharArray());
+            Key key = keyStore.getKey(alias, getPassPhrase().toCharArray());
             return builder
                     .withClientCertificateData(Utils.encodeCertificate(keyStore.getCertificate(alias)))
                     .withClientKeyData(Utils.encodeKey(key));
@@ -47,7 +48,7 @@ public class KubernetesAuthKeystore extends AbstractKubernetesAuth implements Ku
         try {
             String alias = keyStore.aliases().nextElement();
             // Get private key using passphrase
-            Key key = keyStore.getKey(alias, passPhrase.toCharArray());
+            Key key = keyStore.getKey(alias, getPassPhrase().toCharArray());
             return builder
                     .withClientCertData(Utils.encodeCertificate(keyStore.getCertificate(alias)))
                     .withClientKeyData(Utils.encodeKey(key));
@@ -61,6 +62,6 @@ public class KubernetesAuthKeystore extends AbstractKubernetesAuth implements Ku
     }
 
     public String getPassPhrase() {
-        return passPhrase;
+        return passPhrase.getPlainText();
     }
 }

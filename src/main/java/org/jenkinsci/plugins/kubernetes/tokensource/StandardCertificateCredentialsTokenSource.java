@@ -17,6 +17,6 @@ public class StandardCertificateCredentialsTokenSource extends AuthenticationTok
     @NonNull
     @Override
     public KubernetesAuthKeystore convert(@NonNull StandardCertificateCredentials credential) throws AuthenticationTokenException {
-        return new KubernetesAuthKeystore(credential.getKeyStore(), Secret.toString(credential.getPassword()));
+        return new KubernetesAuthKeystore(credential.getKeyStore(), credential.getPassword());
     }
 }
