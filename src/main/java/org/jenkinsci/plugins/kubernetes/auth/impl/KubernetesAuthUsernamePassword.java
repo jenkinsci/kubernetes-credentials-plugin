@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.kubernetes.auth.impl;
 
+import hudson.util.Secret;
 import io.fabric8.kubernetes.api.model.AuthInfoBuilder;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuth;
@@ -11,10 +12,10 @@ import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuthException;
  */
 public class KubernetesAuthUsernamePassword extends AbstractKubernetesAuth implements KubernetesAuth {
     private final String username;
-    private final String password;
+    private final Secret password;
 
 
-    public KubernetesAuthUsernamePassword(String username, String password) {
+    public KubernetesAuthUsernamePassword(String username, Secret password) {
         this.username = username;
         this.password = password;
     }
@@ -38,6 +39,6 @@ public class KubernetesAuthUsernamePassword extends AbstractKubernetesAuth imple
     }
 
     public String getPassword() {
-        return password;
+        return password.getPlainText();
     }
 }

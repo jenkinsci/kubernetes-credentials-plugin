@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.kubernetes.credentials;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
@@ -38,7 +39,7 @@ public class FileSystemServiceAccountCredential extends BaseStandardCredentials
     @SuppressFBWarnings("DMI_HARDCODED_ABSOLUTE_FILENAME")
     public Secret getSecret() {
         try {
-            return Secret.fromString(FileUtils.readFileToString(new File(SERVICEACCOUNT_TOKEN_PATH)));
+            return Secret.fromString(FileUtils.readFileToString(new File(SERVICEACCOUNT_TOKEN_PATH), StandardCharsets.UTF_8));
         } catch (IOException e) {
             return Secret.fromString(null);
         }

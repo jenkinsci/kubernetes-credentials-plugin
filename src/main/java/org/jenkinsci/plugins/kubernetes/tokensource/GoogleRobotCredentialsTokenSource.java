@@ -2,11 +2,11 @@ package org.jenkinsci.plugins.kubernetes.tokensource;
 
 import com.google.jenkins.plugins.credentials.oauth.GoogleOAuth2ScopeRequirement;
 import com.google.jenkins.plugins.credentials.oauth.GoogleRobotCredentials;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import jenkins.authentication.tokens.api.AuthenticationTokenSource;
 import org.jenkinsci.plugins.kubernetes.auth.impl.KubernetesAuthToken;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -19,9 +19,9 @@ public class GoogleRobotCredentialsTokenSource extends AuthenticationTokenSource
         super(KubernetesAuthToken.class, GoogleRobotCredentials.class);
     }
 
-    @NonNull
+    @Nonnull
     @Override
-    public KubernetesAuthToken convert(@NonNull GoogleRobotCredentials credential) {
+    public KubernetesAuthToken convert(@Nonnull GoogleRobotCredentials credential) {
         return new KubernetesAuthToken((serviceAddress, caCertData, skipTlsVerify) -> credential.getAccessToken(new GoogleOAuth2ScopeRequirement() {
             @Override
             public Collection<String> getScopes() {
