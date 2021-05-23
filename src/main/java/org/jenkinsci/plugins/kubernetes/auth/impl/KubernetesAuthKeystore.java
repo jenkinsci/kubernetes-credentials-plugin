@@ -29,6 +29,12 @@ public class KubernetesAuthKeystore extends AbstractKubernetesAuth implements Ku
         this.passPhrase = passPhrase;
     }
 
+    @Deprecated
+    public KubernetesAuthKeystore(@Nonnull KeyStore keyStore, String passPhrase) {
+        this.keyStore = keyStore;
+        this.passPhrase = Secret.fromString(passPhrase);
+    }
+
     @Override
     public AuthInfoBuilder decorate(AuthInfoBuilder builder, KubernetesAuthConfig config) throws KubernetesAuthException {
         try {
