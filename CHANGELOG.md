@@ -4,6 +4,13 @@ CHANGELOG
 Master (unreleased)
 -----
 
+0.9.0
+-----
+* \[test\] Run tests against Java 11 [#30](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/30)
+* use Secret instead of String for sensitive data [#31](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/31)
+* change minimal Jenkins version for 2.222.1 LTS [42edb2ef](https://github.com/jenkinsci/kubernetes-credentials-plugin/commit/42edb2efffb1415f055975667f351f13ed8f4642)
+* more useful error messages with OpenShift [#32](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/32)
+
 0.8.0
 -----
 * Add JCasC test to this plugin [#24](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/24)
