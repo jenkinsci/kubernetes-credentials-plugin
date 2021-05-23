@@ -12,6 +12,9 @@ Contains classes shared between the [Kubernetes Plugin][kubernetes-plugin] and t
 
 Those credentials are available through the UI and in pipelines.
 
+## Prerequisites
+* A jenkins installation running version 2.222.1 or higher (with jdk8 or jdk11).
+
 ## Building and Testing
 To build the extension, run:
 ```bash

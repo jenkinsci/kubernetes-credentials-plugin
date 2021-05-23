@@ -41,7 +41,7 @@
     <java.level>8</java.level>
 
     <!-- dependency versions -->
-    <jenkins.version>2.204.6</jenkins.version>
+    <jenkins.version>2.222.1</jenkins.version>
 
     <!-- maven plugins versions -->
     <maven-coveralls.version>4.3.0</maven-coveralls.version>
