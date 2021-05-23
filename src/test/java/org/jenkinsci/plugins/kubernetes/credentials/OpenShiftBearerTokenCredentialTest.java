@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Max Laverse
@@ -97,11 +98,16 @@ public class OpenShiftBearerTokenCredentialTest {
 
     @Test
     public void testTokenExtractionEarlyExpire() throws OpenShiftBearerTokenCredentialImpl.TokenResponseError {
+        long expectedExpirySec = 86400 - OpenShiftBearerTokenCredentialImpl.EARLY_EXPIRE_DELAY_SEC;
         OpenShiftBearerTokenCredentialImpl.Token token = OpenShiftBearerTokenCredentialImpl.extractTokenFromLocation("https://master.cluster.local:8443/oauth/token/display#access_token=VO4dAgNGLnX5MGYu_wXau8au2Rw0QAqnwq8AtrLkMfU&expires_in=86400&token_type=bearer");
         assertEquals("VO4dAgNGLnX5MGYu_wXau8au2Rw0QAqnwq8AtrLkMfU", token.value);
 
-        // We are optimistic here and expect the test to run in less than a second.
-        assertEquals(86400 - OpenShiftBearerTokenCredentialImpl.EARLY_EXPIRE_DELAY_SEC, (token.expire - System.currentTimeMillis())/1000);
+        long expirySec = (token.expire - System.currentTimeMillis())/1000;
+
+        // We want to test if the expiration time of the token takes EARLY_EXPIRE_DELAY_SEC into account.
+        // Since there can be additional delays caused by the testing infrastructure, we check if
+        // the token expiration is close to the expected value with a 10 seconds margin.
+        assertTrue(expectedExpirySec-10 <= expirySec && expirySec <= expectedExpirySec);
     }
 
     @Test
