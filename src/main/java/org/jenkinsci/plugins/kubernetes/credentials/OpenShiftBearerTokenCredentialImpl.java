@@ -8,9 +8,11 @@ import net.sf.json.JSONObject;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.Header;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -18,6 +20,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -103,12 +106,18 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
         if (token == null || System.currentTimeMillis() > token.expire) {
             try {
                 token = refreshToken(apiServerURL, caCertData, skipTlsVerify);
+            } catch (ClientProtocolException e) {
+                throw new IOException("Can't parse protocol in the OAuth server URL ('" + apiServerURL + "')", e);
             } catch (HttpClientWithTLSOptionsFactory.TLSConfigurationError e) {
                 throw new IOException("Could not configure SSL Factory in HttpClientWithTLSOptionsFactory: " + e.getMessage(), e);
-            } catch (URISyntaxException e) {
-                throw new IOException("The OAuth server URL was invalid ('" + apiServerURL + "'): " + e.getMessage(), e);
+            } catch (HttpHostConnectException e) {
+                throw new IOException("Can't connect to the OAuth server ('" + apiServerURL + "'): " + e.getMessage(), e);
             } catch (TokenResponseError e) {
                 throw new IOException("The response from the OAuth server was invalid: " + e.getMessage(), e);
+            } catch (UnknownHostException e) {
+                throw new IOException("Can't resolve OAuth server hostname ('" + apiServerURL + "'): " + e.getMessage(), e);
+            } catch (URISyntaxException e) {
+                throw new IOException("The OAuth server URL was invalid ('" + apiServerURL + "'): " + e.getMessage(), e);
             }
 
             this.tokenCache.put(apiServerURL, token);
