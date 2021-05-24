@@ -20,31 +20,34 @@ public class KubernetesAuthUsernamePassword extends AbstractKubernetesAuth imple
         this.password = password;
     }
 
-    @Deprecated
     public KubernetesAuthUsernamePassword(String username, String password) {
-        this.username = username;
-        this.password = Secret.fromString(password);
+        this(username, Secret.fromString(password));
     }
 
     @Override
     public AuthInfoBuilder decorate(AuthInfoBuilder authInfoBuilder, KubernetesAuthConfig config) {
         return authInfoBuilder
-                .withUsername(getUsername())
-                .withPassword(getPassword());
+                .withUsername(username)
+                .withPassword(password.getPlainText());
     }
 
     @Override
     public ConfigBuilder decorate(ConfigBuilder builder, KubernetesAuthConfig config) throws KubernetesAuthException {
         return builder
-                .withUsername(getUsername())
-                .withPassword(getPassword());
+                .withUsername(username)
+                .withPassword(password.getPlainText());
     }
 
     public String getUsername() {
         return username;
     }
 
+    @Deprecated
     public String getPassword() {
         return password.getPlainText();
+    }
+
+    public Secret getPasswordSecret() {
+        return password;
     }
 }
