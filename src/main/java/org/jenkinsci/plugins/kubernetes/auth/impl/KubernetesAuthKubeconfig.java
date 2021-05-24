@@ -44,5 +44,4 @@ public class KubernetesAuthKubeconfig implements KubernetesAuth {
     public String getKubeconfig() {
         return kubeconfig;
     }
-
 }

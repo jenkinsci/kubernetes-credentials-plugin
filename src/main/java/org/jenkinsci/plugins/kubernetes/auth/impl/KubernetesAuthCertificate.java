@@ -17,31 +17,34 @@ public class KubernetesAuthCertificate extends AbstractKubernetesAuth implements
         this.key = key;
     }
 
-    @Deprecated
     public KubernetesAuthCertificate(String certificate, String key) {
-        this.certificate = certificate;
-        this.key = Secret.fromString(key);
+        this(certificate, Secret.fromString(key));
     }
 
     @Override
     public AuthInfoBuilder decorate(AuthInfoBuilder builder, KubernetesAuthConfig config) {
         return builder
                 .withClientCertificateData(Utils.encodeBase64(certificate))
-                .withClientKeyData(Utils.encodeBase64(getKey()));
+                .withClientKeyData(Utils.encodeBase64(key.getPlainText()));
     }
 
     @Override
     public ConfigBuilder decorate(ConfigBuilder builder, KubernetesAuthConfig config) {
         return builder
                 .withClientCertData(Utils.encodeBase64(certificate))
-                .withClientKeyData(Utils.encodeBase64(getKey()));
+                .withClientKeyData(Utils.encodeBase64(key.getPlainText()));
     }
 
     public String getCertificate() {
         return certificate;
     }
 
+    @Deprecated
     public String getKey() {
         return key.getPlainText();
+    }
+
+    public Secret getKeySecret() {
+        return key;
     }
 }

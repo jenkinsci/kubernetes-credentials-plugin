@@ -9,30 +9,23 @@ import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuthException;
 import org.jenkinsci.plugins.kubernetes.credentials.Utils;
 
 import javax.annotation.Nonnull;
-import java.security.Key;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
+import java.security.*;
 import java.security.cert.CertificateEncodingException;
 
 /**
  * Kubernetes authentication using certificate and private key obtained from a keystore with a passphrase.
  */
 public class KubernetesAuthKeystore extends AbstractKubernetesAuth implements KubernetesAuth {
-    private KeyStore keyStore;
-
     private final Secret passPhrase;
+    private KeyStore keyStore;
 
     public KubernetesAuthKeystore(@Nonnull KeyStore keyStore, Secret passPhrase) {
         this.keyStore = keyStore;
         this.passPhrase = passPhrase;
     }
 
-    @Deprecated
     public KubernetesAuthKeystore(@Nonnull KeyStore keyStore, String passPhrase) {
-        this.keyStore = keyStore;
-        this.passPhrase = Secret.fromString(passPhrase);
+        this(keyStore, Secret.fromString(passPhrase));
     }
 
     @Override
@@ -40,7 +33,7 @@ public class KubernetesAuthKeystore extends AbstractKubernetesAuth implements Ku
         try {
             String alias = keyStore.aliases().nextElement();
             // Get private key using passphrase
-            Key key = keyStore.getKey(alias, getPassPhrase().toCharArray());
+            Key key = keyStore.getKey(alias, passPhrase.getPlainText().toCharArray());
             return builder
                     .withClientCertificateData(Utils.encodeCertificate(keyStore.getCertificate(alias)))
                     .withClientKeyData(Utils.encodeKey(key));
@@ -54,7 +47,7 @@ public class KubernetesAuthKeystore extends AbstractKubernetesAuth implements Ku
         try {
             String alias = keyStore.aliases().nextElement();
             // Get private key using passphrase
-            Key key = keyStore.getKey(alias, getPassPhrase().toCharArray());
+            Key key = keyStore.getKey(alias, passPhrase.getPlainText().toCharArray());
             return builder
                     .withClientCertData(Utils.encodeCertificate(keyStore.getCertificate(alias)))
                     .withClientKeyData(Utils.encodeKey(key));
@@ -67,7 +60,12 @@ public class KubernetesAuthKeystore extends AbstractKubernetesAuth implements Ku
         return keyStore;
     }
 
+    @Deprecated
     public String getPassPhrase() {
         return passPhrase.getPlainText();
+    }
+
+    public Secret getPassPhraseSecret() {
+        return passPhrase;
     }
 }
