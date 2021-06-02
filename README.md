@@ -11,6 +11,7 @@ Contains classes shared between the [Kubernetes Plugin][kubernetes-plugin] and t
 * an OpenShift secret credentials, which is meant to hold a Kubernetes token
 
 Those credentials are available through the UI and in pipelines.
+Also provides the implementation of various kinds of Kubernetes authentication, for example via kubeconfig files.
 
 ## Prerequisites
 * A jenkins installation running version 2.222.1 or higher (with jdk8 or jdk11).
