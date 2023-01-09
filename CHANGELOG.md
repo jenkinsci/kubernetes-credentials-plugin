@@ -4,6 +4,13 @@ CHANGELOG
 Master (unreleased)
 -----
 
+0.10.0
+-----
+* Update kubernetes-client-api to 5.4.1 [#35](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/35)
+* Upgrade kubernetes-client to 6.x [#36](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/36)
+* Have *KubernetesAuth able to directly access Secret instead of String [#33](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/33)
+* [\doc\] Noting broader usage scope [#34](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/34)
+
 0.9.0
 -----
 * \[test\] Run tests against Java 11 [#30](https://github.com/jenkinsci/kubernetes-credentials-plugin/pull/30)
