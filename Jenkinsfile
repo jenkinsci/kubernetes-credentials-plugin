@@ -1,5 +1,7 @@
 buildPlugin(
     timeout: 10,
     failFast: true,
-    jdkVersions: [8, 11]
+    configurations: [
+        [platform: 'linux', jdk: 17],
+        [platform: 'windows', jdk: 11],]
 )

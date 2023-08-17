@@ -6,7 +6,7 @@ import jenkins.authentication.tokens.api.AuthenticationTokenException;
 import jenkins.authentication.tokens.api.AuthenticationTokenSource;
 import org.jenkinsci.plugins.kubernetes.auth.impl.KubernetesAuthKeystore;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 @Extension
 public class StandardCertificateCredentialsTokenSource extends AuthenticationTokenSource<KubernetesAuthKeystore, StandardCertificateCredentials> {
@@ -14,9 +14,9 @@ public class StandardCertificateCredentialsTokenSource extends AuthenticationTok
         super(KubernetesAuthKeystore.class, StandardCertificateCredentials.class);
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public KubernetesAuthKeystore convert(@Nonnull StandardCertificateCredentials credential) throws AuthenticationTokenException {
+    public KubernetesAuthKeystore convert(@NonNull StandardCertificateCredentials credential) throws AuthenticationTokenException {
         return new KubernetesAuthKeystore(credential.getKeyStore(), credential.getPassword());
     }
 }

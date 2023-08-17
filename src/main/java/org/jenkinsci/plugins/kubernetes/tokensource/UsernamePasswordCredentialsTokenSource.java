@@ -9,7 +9,7 @@ import org.jenkinsci.plugins.kubernetes.auth.impl.KubernetesAuthToken;
 import org.jenkinsci.plugins.kubernetes.auth.impl.KubernetesAuthUsernamePassword;
 import org.jenkinsci.plugins.kubernetes.credentials.TokenProducer;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 @Extension
 public class UsernamePasswordCredentialsTokenSource extends AuthenticationTokenSource<KubernetesAuth, StandardUsernamePasswordCredentials> {
@@ -17,9 +17,9 @@ public class UsernamePasswordCredentialsTokenSource extends AuthenticationTokenS
         super(KubernetesAuth.class, StandardUsernamePasswordCredentials.class);
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public KubernetesAuth convert(@Nonnull StandardUsernamePasswordCredentials credential) throws AuthenticationTokenException {
+    public KubernetesAuth convert(@NonNull StandardUsernamePasswordCredentials credential) throws AuthenticationTokenException {
         if (credential instanceof TokenProducer) {
             return new KubernetesAuthToken((TokenProducer) credential);
         } else {

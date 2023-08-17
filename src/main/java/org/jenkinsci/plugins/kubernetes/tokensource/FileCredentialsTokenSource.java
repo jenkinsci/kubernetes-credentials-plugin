@@ -7,10 +7,11 @@ import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.kubernetes.auth.impl.KubernetesAuthKubeconfig;
 import org.jenkinsci.plugins.plaincredentials.FileCredentials;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 @Extension(optional = true)
 public class FileCredentialsTokenSource extends AuthenticationTokenSource<KubernetesAuthKubeconfig, FileCredentials> {
@@ -18,9 +19,9 @@ public class FileCredentialsTokenSource extends AuthenticationTokenSource<Kubern
         super(KubernetesAuthKubeconfig.class, FileCredentials.class);
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public KubernetesAuthKubeconfig convert(@Nonnull FileCredentials credential) throws AuthenticationTokenException {
+    public KubernetesAuthKubeconfig convert(@NonNull FileCredentials credential) throws AuthenticationTokenException {
         try (InputStream is = credential.getContent()) {
             return new KubernetesAuthKubeconfig(IOUtils.toString(is, StandardCharsets.UTF_8));
         } catch (IOException e) {

@@ -3,28 +3,28 @@ package org.jenkinsci.plugins.kubernetes.auth.impl;
 import hudson.util.Secret;
 import io.fabric8.kubernetes.api.model.AuthInfoBuilder;
 import io.fabric8.kubernetes.client.ConfigBuilder;
-import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuth;
 import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuthConfig;
 import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuthException;
 import org.jenkinsci.plugins.kubernetes.credentials.Utils;
 
-import javax.annotation.Nonnull;
 import java.security.*;
 import java.security.cert.CertificateEncodingException;
+
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * Kubernetes authentication using certificate and private key obtained from a keystore with a passphrase.
  */
-public class KubernetesAuthKeystore extends AbstractKubernetesAuth implements KubernetesAuth {
+public class KubernetesAuthKeystore extends AbstractKubernetesAuth {
     private final Secret passPhrase;
     private KeyStore keyStore;
 
-    public KubernetesAuthKeystore(@Nonnull KeyStore keyStore, Secret passPhrase) {
+    public KubernetesAuthKeystore(@NonNull KeyStore keyStore, Secret passPhrase) {
         this.keyStore = keyStore;
         this.passPhrase = passPhrase;
     }
 
-    public KubernetesAuthKeystore(@Nonnull KeyStore keyStore, String passPhrase) {
+    public KubernetesAuthKeystore(@NonNull KeyStore keyStore, String passPhrase) {
         this(keyStore, Secret.fromString(passPhrase));
     }
 

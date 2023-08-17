@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.50</version>
+    <version>4.72</version>
   </parent>
 
   <groupId>org.jenkinsci.plugins</groupId>
@@ -14,7 +14,7 @@
   <packaging>hpi</packaging>
 
   <scm>
-    <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
+    <connection>scm:git:https://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/jenkinsci/${project.artifactId}-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
     <tag>${scmTag}</tag>
@@ -40,20 +40,22 @@
     <changelist>-SNAPSHOT</changelist>
 
     <!-- jenkins versions -->
-    <jenkins.version>2.332.4</jenkins.version>
-    <bom.artifactId>bom-2.332.x</bom.artifactId>
-    <bom.version>1763.v092b_8980a_f5e</bom.version>
+    <jenkins.version>2.387.3</jenkins.version>
+    <bom.artifactId>bom-2.387.x</bom.artifactId>
+    <bom.version>2329.v078520e55c19</bom.version>
 
     <!-- dependency versions -->
-    <authentication-tokens.version>1.3</authentication-tokens.version>
-    <docker-commons.version>1.15</docker-commons.version>
-    <google-oauth-plugin.version>0.8</google-oauth-plugin.version>
-    <kubernetes-client-api.version>6.3.1-206.v76d3b_6b_14db_b</kubernetes-client-api.version>
+    <authentication-tokens.version>1.53.v1c90fd9191a_b_</authentication-tokens.version>
+    <docker-commons.version>439.va_3cb_0a_6a_fb_29</docker-commons.version>
+    <google-oauth-plugin.version>1.0.9</google-oauth-plugin.version>
+    <kubernetes-client-api.version>6.4.1-215.v2ed17097a_8e9</kubernetes-client-api.version>
 
     <!-- maven plugins versions -->
     <maven-coveralls.version>4.3.0</maven-coveralls.version>
-    <maven-jacoco.version>0.8.2</maven-jacoco.version>
+    <maven-jacoco.version>0.8.10</maven-jacoco.version>
 
+    <spotbugs.effort>Max</spotbugs.effort>
+    <spotbugs.threshold>Low</spotbugs.threshold>
   </properties>
 
   <dependencies>

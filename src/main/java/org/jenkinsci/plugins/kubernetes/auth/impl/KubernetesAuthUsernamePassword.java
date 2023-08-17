@@ -3,14 +3,13 @@ package org.jenkinsci.plugins.kubernetes.auth.impl;
 import hudson.util.Secret;
 import io.fabric8.kubernetes.api.model.AuthInfoBuilder;
 import io.fabric8.kubernetes.client.ConfigBuilder;
-import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuth;
 import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuthConfig;
 import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuthException;
 
 /**
  * Kubernetes Authentication using a username and password
  */
-public class KubernetesAuthUsernamePassword extends AbstractKubernetesAuth implements KubernetesAuth {
+public class KubernetesAuthUsernamePassword extends AbstractKubernetesAuth {
     private final String username;
     private final Secret password;
 
