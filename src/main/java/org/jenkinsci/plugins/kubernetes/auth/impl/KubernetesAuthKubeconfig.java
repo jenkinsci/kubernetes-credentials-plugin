@@ -29,8 +29,12 @@ public class KubernetesAuthKubeconfig implements KubernetesAuth {
     }
 
     public io.fabric8.kubernetes.api.model.ConfigBuilder buildConfigBuilder(KubernetesAuthConfig config, String context, String clusterName, String username) throws KubernetesAuthException {
-        io.fabric8.kubernetes.api.model.Config kubeConfig = KubeConfigUtils.parseConfigFromString(getKubeconfig());
-        return new io.fabric8.kubernetes.api.model.ConfigBuilder(kubeConfig);
+        try {
+            io.fabric8.kubernetes.api.model.Config kubeConfig = KubeConfigUtils.parseConfigFromString(getKubeconfig());
+            return new io.fabric8.kubernetes.api.model.ConfigBuilder(kubeConfig);
+        } catch (Exception e) {
+            throw new KubernetesAuthException(e.getMessage(), e);
+        }
     }
 
     public String getKubeconfig() {
