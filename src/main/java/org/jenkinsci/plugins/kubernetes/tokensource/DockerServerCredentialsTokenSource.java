@@ -6,15 +6,15 @@ import jenkins.authentication.tokens.api.AuthenticationTokenSource;
 import org.jenkinsci.plugins.docker.commons.credentials.DockerServerCredentials;
 import org.jenkinsci.plugins.kubernetes.auth.impl.KubernetesAuthCertificate;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 @Extension(optional = true)
 public class DockerServerCredentialsTokenSource extends AuthenticationTokenSource<KubernetesAuthCertificate, DockerServerCredentials> {
     public DockerServerCredentialsTokenSource() { super(KubernetesAuthCertificate.class, DockerServerCredentials.class); }
 
-    @Nonnull
+    @NonNull
     @Override
-    public KubernetesAuthCertificate convert(@Nonnull DockerServerCredentials credential) throws AuthenticationTokenException {
+    public KubernetesAuthCertificate convert(@NonNull DockerServerCredentials credential) throws AuthenticationTokenException {
         return new KubernetesAuthCertificate(credential.getClientCertificate(), credential.getClientKeySecret());
     }
 }

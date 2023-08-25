@@ -1,7 +1,6 @@
 # Kubernetes Credentials Plugin
 
 [![Jenkins Plugin](https://img.shields.io/jenkins/plugin/v/kubernetes-credentials.svg)](https://plugins.jenkins.io/kubernetes-credentials)
-[![travis-ci](https://travis-ci.org/jenkinsci/kubernetes-credentials-plugin.svg?branch=master)](https://travis-ci.org/jenkinsci/kubernetes-credentials-plugin)
 [![Coverage Status](https://coveralls.io/repos/github/jenkinsci/kubernetes-credentials-plugin/badge.svg?branch=master)](https://coveralls.io/github/jenkinsci/kubernetes-credentials-plugin?branch=master)
 [![Jenkins Plugin installs](https://img.shields.io/jenkins/plugin/i/kubernetes-credentials.svg)](https://plugins.jenkins.io/kubernetes-credentials)
 
@@ -14,7 +13,7 @@ Those credentials are available through the UI and in pipelines.
 Also provides the implementation of various kinds of Kubernetes authentication, for example via kubeconfig files.
 
 ## Prerequisites
-* A jenkins installation running version 2.222.1 or higher (with jdk8 or jdk11).
+* A jenkins installation running version 2.387.3 or higher (with jdk11 or jdk17).
 
 ## Building and Testing
 To build the extension, run:
