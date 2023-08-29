@@ -127,6 +127,11 @@
         <scope>import</scope>
         <type>pom</type>
       </dependency>
+      <dependency>
+        <groupId>io.jenkins.plugins</groupId>
+        <artifactId>okhttp-api</artifactId>
+        <version>4.11.0-157.v6852a_a_fa_ec11</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
