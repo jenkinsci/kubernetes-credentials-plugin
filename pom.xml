@@ -40,15 +40,15 @@
     <changelist>-SNAPSHOT</changelist>
 
     <!-- jenkins versions -->
-    <jenkins.version>2.387.3</jenkins.version>
-    <bom.artifactId>bom-2.387.x</bom.artifactId>
-    <bom.version>2329.v078520e55c19</bom.version>
+    <jenkins.version>2.401.1</jenkins.version>
+    <bom.artifactId>bom-2.401.x</bom.artifactId>
+    <bom.version>2244.vd60654536b_96</bom.version>
 
     <!-- dependency versions -->
     <authentication-tokens.version>1.53.v1c90fd9191a_b_</authentication-tokens.version>
     <docker-commons.version>439.va_3cb_0a_6a_fb_29</docker-commons.version>
     <google-oauth-plugin.version>1.0.9</google-oauth-plugin.version>
-    <kubernetes-client-api.version>6.4.1-215.v2ed17097a_8e9</kubernetes-client-api.version>
+    <kubernetes-client-api.version>6.8.1-224.vd388fca_4db_3b_</kubernetes-client-api.version>
 
     <!-- maven plugins versions -->
     <maven-coveralls.version>4.3.0</maven-coveralls.version>
@@ -126,6 +126,11 @@
         <version>${bom.version}</version>
         <scope>import</scope>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>io.jenkins.plugins</groupId>
+        <artifactId>okhttp-api</artifactId>
+        <version>4.11.0-157.v6852a_a_fa_ec11</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

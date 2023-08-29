@@ -32,7 +32,7 @@ public class KubernetesAuthKubeconfig implements KubernetesAuth {
         try {
             io.fabric8.kubernetes.api.model.Config kubeConfig = KubeConfigUtils.parseConfigFromString(getKubeconfig());
             return new io.fabric8.kubernetes.api.model.ConfigBuilder(kubeConfig);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new KubernetesAuthException(e.getMessage(), e);
         }
     }
