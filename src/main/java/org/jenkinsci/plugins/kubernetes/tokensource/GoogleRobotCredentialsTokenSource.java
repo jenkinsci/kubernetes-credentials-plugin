@@ -6,9 +6,10 @@ import hudson.Extension;
 import jenkins.authentication.tokens.api.AuthenticationTokenSource;
 import org.jenkinsci.plugins.kubernetes.auth.impl.KubernetesAuthToken;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
+
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * Converts {@link GoogleRobotCredentials} to {@link String} token.
@@ -19,14 +20,19 @@ public class GoogleRobotCredentialsTokenSource extends AuthenticationTokenSource
         super(KubernetesAuthToken.class, GoogleRobotCredentials.class);
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public KubernetesAuthToken convert(@Nonnull GoogleRobotCredentials credential) {
-        return new KubernetesAuthToken((serviceAddress, caCertData, skipTlsVerify) -> credential.getAccessToken(new GoogleOAuth2ScopeRequirement() {
-            @Override
-            public Collection<String> getScopes() {
-                return Collections.singleton("https://www.googleapis.com/auth/cloud-platform");
-            }
-        }).getPlainText());
+    public KubernetesAuthToken convert(@NonNull GoogleRobotCredentials credential) {
+        return new KubernetesAuthToken((serviceAddress, caCertData, skipTlsVerify) -> credential.getAccessToken(new InnerGoogleOAuth2ScopeRequirement()).getPlainText());
+    }
+
+    private static class InnerGoogleOAuth2ScopeRequirement extends GoogleOAuth2ScopeRequirement {
+
+        private static final long serialVersionUID = -4271930203103202864L;
+
+        @Override
+        public Collection<String> getScopes() {
+            return Collections.singleton("https://www.googleapis.com/auth/cloud-platform");
+        }
     }
 }

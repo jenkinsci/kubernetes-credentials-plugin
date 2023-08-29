@@ -3,11 +3,10 @@ package org.jenkinsci.plugins.kubernetes.auth.impl;
 import hudson.util.Secret;
 import io.fabric8.kubernetes.api.model.AuthInfoBuilder;
 import io.fabric8.kubernetes.client.ConfigBuilder;
-import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuth;
 import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuthConfig;
 import org.jenkinsci.plugins.kubernetes.credentials.Utils;
 
-public class KubernetesAuthCertificate extends AbstractKubernetesAuth implements KubernetesAuth {
+public class KubernetesAuthCertificate extends AbstractKubernetesAuth {
     private final String certificate;
 
     private final Secret key;
