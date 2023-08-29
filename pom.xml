@@ -48,7 +48,7 @@
     <authentication-tokens.version>1.53.v1c90fd9191a_b_</authentication-tokens.version>
     <docker-commons.version>439.va_3cb_0a_6a_fb_29</docker-commons.version>
     <google-oauth-plugin.version>1.0.9</google-oauth-plugin.version>
-    <kubernetes-client-api.version>6.8.1-220.v1f66736f9a_42</kubernetes-client-api.version>
+    <kubernetes-client-api.version>6.8.1-224.vd388fca_4db_3b_</kubernetes-client-api.version>
 
     <!-- maven plugins versions -->
     <maven-coveralls.version>4.3.0</maven-coveralls.version>
@@ -68,11 +68,6 @@
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>jackson2-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.jenkins.plugins</groupId>
-      <artifactId>snakeyaml-api</artifactId>
-      <version>2.1-110.v4960f4074978</version>    
-    </dependency>	
 
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
@@ -112,7 +107,6 @@
     <dependency>
       <groupId>io.jenkins</groupId>
       <artifactId>configuration-as-code</artifactId>
-      <version>1670.v564dc8b_982d0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
