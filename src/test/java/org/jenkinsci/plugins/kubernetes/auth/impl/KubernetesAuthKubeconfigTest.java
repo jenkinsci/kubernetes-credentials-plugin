@@ -1,10 +1,9 @@
 package org.jenkinsci.plugins.kubernetes.auth.impl;
 
-import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuthConfig;
-import org.jenkinsci.plugins.kubernetes.auth.impl.KubernetesAuthKubeconfig;
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+
+import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuthConfig;
+import org.junit.Test;
 
 public class KubernetesAuthKubeconfigTest {
     @Test

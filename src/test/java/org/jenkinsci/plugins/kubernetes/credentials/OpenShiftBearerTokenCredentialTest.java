@@ -1,7 +1,12 @@
 package org.jenkinsci.plugins.kubernetes.credentials;
 
-import com.cloudbees.plugins.credentials.CredentialsScope;
-import hudson.util.Secret;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -9,14 +14,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.jvnet.hudson.test.JenkinsRule;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
+import com.cloudbees.plugins.credentials.CredentialsScope;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import hudson.util.Secret;
 
 /**
  * @author Max Laverse
@@ -29,9 +31,6 @@ public class OpenShiftBearerTokenCredentialTest {
 
     @Rule
     public JenkinsRule r = new JenkinsRule();
-
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
 
     private Server server;
 
@@ -71,30 +70,32 @@ public class OpenShiftBearerTokenCredentialTest {
 
     @Test
     public void testBadStatusCode() throws IOException {
-        expectedEx.expect(IOException.class);
-        expectedEx.expectMessage("The response from the OAuth server was invalid: The OAuth service didn't respond with a redirection but with '400: Bad Request'");
-
-        OpenShiftBearerTokenCredentialImpl t = new OpenShiftBearerTokenCredentialImpl(CredentialsScope.GLOBAL, CREDENTIAL_ID, "sample", USERNAME, PASSWORD);
-        t.getToken(server.getURI() + "bad-response", null, true);
+		assertThrows("The response from the OAuth server was invalid: The OAuth service didn't respond with a redirection but with '400: Bad Request'",
+				IOException.class, () -> {
+			        OpenShiftBearerTokenCredentialImpl t = new OpenShiftBearerTokenCredentialImpl(CredentialsScope.GLOBAL, CREDENTIAL_ID, "sample", USERNAME, PASSWORD);
+			        t.getToken(server.getURI() + "bad-response", null, true);
+				});
     }
 
     @Test
     public void testMissingLocation() throws IOException {
-        expectedEx.expect(IOException.class);
-        expectedEx.expectMessage("The response from the OAuth server was invalid: The OAuth service didn't respond with location header");
-
-        OpenShiftBearerTokenCredentialImpl t = new OpenShiftBearerTokenCredentialImpl(CredentialsScope.GLOBAL, CREDENTIAL_ID, "sample", USERNAME, PASSWORD);
-        t.getToken(server.getURI() + "missing-location", null, true);
+		assertThrows("The response from the OAuth server was invalid: The OAuth service didn't respond with location header",
+				IOException.class, () -> {
+			        OpenShiftBearerTokenCredentialImpl t = new OpenShiftBearerTokenCredentialImpl(CredentialsScope.GLOBAL, CREDENTIAL_ID, "sample", USERNAME, PASSWORD);
+			        t.getToken(server.getURI() + "missing-location", null, true);
+				});
     }
 
-    @Test
-    public void testBadLocation() throws IOException {
-        expectedEx.expect(IOException.class);
-        expectedEx.expectMessage("The response from the OAuth server was invalid: The response contained no token");
+	@Test
+	public void testBadLocation() throws IOException {
 
-        OpenShiftBearerTokenCredentialImpl t = new OpenShiftBearerTokenCredentialImpl(CredentialsScope.GLOBAL, CREDENTIAL_ID, "sample", USERNAME, PASSWORD);
-        t.getToken(server.getURI() + "bad-location", null, true);
-    }
+		assertThrows("The response from the OAuth server was invalid: The response contained no token",
+				IOException.class, () -> {
+					OpenShiftBearerTokenCredentialImpl t = new OpenShiftBearerTokenCredentialImpl(
+							CredentialsScope.GLOBAL, CREDENTIAL_ID, "sample", USERNAME, PASSWORD);
+					t.getToken(server.getURI() + "bad-location", null, true);
+				});
+	}
 
     @Test
     public void testTokenExtractionEarlyExpire() throws OpenShiftBearerTokenCredentialImpl.TokenResponseError {
@@ -110,21 +111,21 @@ public class OpenShiftBearerTokenCredentialTest {
         assertTrue(expectedExpirySec-10 <= expirySec && expirySec <= expectedExpirySec);
     }
 
-    @Test
-    public void testInvalidExpireTokenExtraction() throws OpenShiftBearerTokenCredentialImpl.TokenResponseError {
-        expectedEx.expect(OpenShiftBearerTokenCredentialImpl.TokenResponseError.class);
-        expectedEx.expectMessage("Bad format for the token expiration value: bad");
+	@Test
+	public void testInvalidExpireTokenExtraction() throws OpenShiftBearerTokenCredentialImpl.TokenResponseError {
+		assertThrows("Bad format for the token expiration value: bad",
+				OpenShiftBearerTokenCredentialImpl.TokenResponseError.class,
+				() -> OpenShiftBearerTokenCredentialImpl.extractTokenFromLocation(
+						"https://master.cluster.local:8443/oauth/token/display#access_token=VO4dAgNGLnX5MGYu_wXau8au2Rw0QAqnwq8AtrLkMfU&expires_in=bad&token_type=bearer"));
+	}
 
-        OpenShiftBearerTokenCredentialImpl.extractTokenFromLocation("https://master.cluster.local:8443/oauth/token/display#access_token=VO4dAgNGLnX5MGYu_wXau8au2Rw0QAqnwq8AtrLkMfU&expires_in=bad&token_type=bearer");
-    }
-
-    @Test
-    public void testErroneousTokenExtraction() throws OpenShiftBearerTokenCredentialImpl.TokenResponseError {
-        expectedEx.expect(OpenShiftBearerTokenCredentialImpl.TokenResponseError.class);
-        expectedEx.expectMessage("An error was returned instead of a token: an error has_occured, bad username");
-
-        OpenShiftBearerTokenCredentialImpl.extractTokenFromLocation("https://master.cluster.local:8443/oauth/token/display#error=an+error+has_occured&error_description=bad+username&access_token=VO4dAgNGLnX5MGYu_wXau8au2Rw0QAqnwq8AtrLkMfU&expires_in=86400&token_type=bearer");
-    }
+	@Test
+	public void testErroneousTokenExtraction() throws OpenShiftBearerTokenCredentialImpl.TokenResponseError {
+		assertThrows("An error was returned instead of a token: an error has_occured, bad username",
+				OpenShiftBearerTokenCredentialImpl.TokenResponseError.class,
+				() -> OpenShiftBearerTokenCredentialImpl.extractTokenFromLocation(
+						"https://master.cluster.local:8443/oauth/token/display#error=an+error+has_occured&error_description=bad+username&access_token=VO4dAgNGLnX5MGYu_wXau8au2Rw0QAqnwq8AtrLkMfU&expires_in=86400&token_type=bearer"));
+	}
 
     @Test
     public void testAuthorizationHeader() {

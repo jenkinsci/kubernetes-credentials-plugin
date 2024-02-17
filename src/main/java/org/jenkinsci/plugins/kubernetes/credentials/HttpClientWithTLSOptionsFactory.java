@@ -95,7 +95,12 @@ public class HttpClientWithTLSOptionsFactory {
     }
 
     public static class TLSConfigurationError extends Exception {
-        public TLSConfigurationError(Exception e) {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public TLSConfigurationError(Exception e) {
             super(e);
         }
     }

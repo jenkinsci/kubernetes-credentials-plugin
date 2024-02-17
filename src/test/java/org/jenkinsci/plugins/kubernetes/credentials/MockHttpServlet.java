@@ -14,7 +14,12 @@ import java.util.regex.Pattern;
  * @author Max Laverse
  */
 public class MockHttpServlet extends HttpServlet {
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         switch (request.getPathInfo()) {
             case "/bad-location/oauth/authorize":
                 response.sendRedirect("bad");

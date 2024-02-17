@@ -1,14 +1,6 @@
 package org.jenkinsci.plugins.kubernetes.auth.impl;
 
-import hudson.util.Secret;
-import io.fabric8.kubernetes.api.model.Config;
-import io.fabric8.kubernetes.client.utils.Serialization;
-import org.apache.commons.compress.utils.IOUtils;
-import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuthConfig;
-import org.jenkinsci.plugins.kubernetes.credentials.Utils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.JenkinsRule;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +9,14 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 
-import static org.junit.Assert.assertEquals;
+import org.apache.commons.compress.utils.IOUtils;
+import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuthConfig;
+import org.jenkinsci.plugins.kubernetes.credentials.Utils;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
+
+import hudson.util.Secret;
 
 public class KubernetesAuthKeystoreTest {
     @Rule
@@ -30,9 +29,7 @@ public class KubernetesAuthKeystoreTest {
         try (InputStream resourceAsStream = getClass().getResourceAsStream("kubernetes.pkcs12")) {
             KeyStore keyStore = loadKeyStore(resourceAsStream, PASSPHRASE.toCharArray());
             KubernetesAuthKeystore auth = new KubernetesAuthKeystore(keyStore, Secret.fromString(PASSPHRASE));
-            Config c = Serialization.yamlMapper().readValue(
-                    auth.buildKubeConfig(new KubernetesAuthConfig("serverUrl", "caCertificate", false)), Config.class
-            );
+            io.fabric8.kubernetes.api.model.Config c = auth.buildConfigBuilder(new KubernetesAuthConfig("serverUrl", "caCertificate", false), "k8s", "k8s", "cluster-admin").build();
 
             // verifying class doesn't modify cert and key data, so not using here
             assertEquals(Utils.encodeBase64(readFile("test.crt")), c.getUsers().get(0).getUser().getClientCertificateData());
