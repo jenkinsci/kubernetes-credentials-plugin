@@ -36,7 +36,6 @@
   </developers>
 
   <properties>
-    <revision>0.12</revision>
     <changelist>999999-SNAPSHOT</changelist>
 
     <!-- jenkins versions -->
