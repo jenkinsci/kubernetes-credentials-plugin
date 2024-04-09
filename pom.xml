@@ -8,7 +8,7 @@
 
   <groupId>org.jenkinsci.plugins</groupId>
   <artifactId>kubernetes-credentials</artifactId>
-  <version>${revision}${changelist}</version>
+  <version>${changelist}</version>
   <name>Kubernetes Credentials Plugin</name>
   <url>https://github.com/jenkinsci/kubernetes-credentials-plugin/</url>
   <packaging>hpi</packaging>
@@ -36,8 +36,7 @@
   </developers>
 
   <properties>
-    <revision>0.12</revision>
-    <changelist>-SNAPSHOT</changelist>
+    <changelist>999999-SNAPSHOT</changelist>
 
     <!-- jenkins versions -->
     <jenkins.version>2.401.1</jenkins.version>
