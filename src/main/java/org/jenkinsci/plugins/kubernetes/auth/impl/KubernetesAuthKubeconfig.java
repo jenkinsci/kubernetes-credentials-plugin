@@ -1,12 +1,11 @@
 package org.jenkinsci.plugins.kubernetes.auth.impl;
 
-import io.fabric8.kubernetes.client.ConfigBuilder;
-import io.fabric8.kubernetes.client.internal.KubeConfigUtils;
 import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuth;
 import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuthConfig;
 import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuthException;
 
-import java.io.IOException;
+import io.fabric8.kubernetes.client.ConfigBuilder;
+import io.fabric8.kubernetes.client.internal.KubeConfigUtils;
 
 /**
  * Kubernetes authentication using a raw kubeconfig string.

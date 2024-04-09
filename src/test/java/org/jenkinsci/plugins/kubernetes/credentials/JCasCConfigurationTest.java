@@ -1,17 +1,18 @@
 package org.jenkinsci.plugins.kubernetes.credentials;
 
-import com.cloudbees.plugins.credentials.CredentialsProvider;
-import com.cloudbees.plugins.credentials.CredentialsScope;
-import hudson.init.InitMilestone;
-import io.jenkins.plugins.casc.misc.RoundTripAbstractTest;
-import jenkins.model.Jenkins;
-import org.jvnet.hudson.test.RestartableJenkinsRule;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import org.jvnet.hudson.test.RestartableJenkinsRule;
+
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.CredentialsScope;
+
+import io.jenkins.plugins.casc.misc.RoundTripAbstractTest;
+import jenkins.model.Jenkins;
 
 public class JCasCConfigurationTest extends RoundTripAbstractTest {
 
@@ -29,7 +30,7 @@ public class JCasCConfigurationTest extends RoundTripAbstractTest {
         //        assertThat(fileSystemServiceAccountCredential.getScope(), is(CredentialsScope.GLOBAL));
 
         List<OpenShiftBearerTokenCredentialImpl> creds1 =
-                CredentialsProvider.lookupCredentials(OpenShiftBearerTokenCredentialImpl.class,
+                CredentialsProvider.lookupCredentialsInItemGroup(OpenShiftBearerTokenCredentialImpl.class,
                         Jenkins.getInstanceOrNull(), null, Collections.emptyList());
         assertThat(creds1.size(), is(1));
         OpenShiftBearerTokenCredentialImpl openShiftBearerTokenCredential = creds1.get(0);

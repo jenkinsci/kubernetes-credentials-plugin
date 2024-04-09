@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 /**
  * @author <a href="mailto:nicolas.deloof@gmail.com">Nicolas De Loof</a>
@@ -38,7 +38,7 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
     // Used to artificially reduce the lifespan of a token
     protected static final long EARLY_EXPIRE_DELAY_SEC = 300;
     private static final long serialVersionUID = 6031616605797622926L;
-    private static final Logger logger = Logger.getLogger(OpenShiftBearerTokenCredentialImpl.class.getName());
+    //private static final Logger logger = Logger.getLogger(OpenShiftBearerTokenCredentialImpl.class.getName());
     private transient ConcurrentMap<String, Token> tokenCache = new ConcurrentHashMap<>();
 
     @DataBoundConstructor
@@ -172,7 +172,12 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
     }
 
     public static class TokenResponseError extends Exception {
-        public TokenResponseError(String message) {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public TokenResponseError(String message) {
             super(message);
         }
     }

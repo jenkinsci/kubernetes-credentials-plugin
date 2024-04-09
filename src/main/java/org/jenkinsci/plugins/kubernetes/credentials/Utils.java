@@ -1,12 +1,11 @@
 package org.jenkinsci.plugins.kubernetes.credentials;
 
-import org.apache.commons.codec.binary.Base64;
-
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
-import java.security.cert.X509Certificate;
+
+import org.apache.commons.codec.binary.Base64;
 
 public abstract class Utils {
 
