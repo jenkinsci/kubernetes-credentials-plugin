@@ -1,23 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.74</version>
+    <version>4.82</version>
+    <relativePath />
   </parent>
 
   <groupId>org.jenkinsci.plugins</groupId>
   <artifactId>kubernetes-credentials</artifactId>
   <version>${changelist}</version>
   <name>Kubernetes Credentials Plugin</name>
-  <url>https://github.com/jenkinsci/kubernetes-credentials-plugin/</url>
+  <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
   <packaging>hpi</packaging>
 
   <scm>
-    <connection>scm:git:https://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/${project.artifactId}-plugin.git</developerConnection>
-    <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
-    <tag>kubernetes-credentials-0.11</tag>
+    <connection>scm:git:https://github.com/${gitHubRepo}.git</connection>
+    <developerConnection>scm:git:git@github.com:${gitHubRepo}.git</developerConnection>
+    <url>https://github.com/${gitHubRepo}</url>
+    <tag>${scmTag}</tag>
   </scm>
 
   <licenses>
@@ -37,21 +39,15 @@
 
   <properties>
     <changelist>999999-SNAPSHOT</changelist>
+    <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
 
     <!-- jenkins versions -->
-    <jenkins.version>2.401.1</jenkins.version>
+    <jenkins.version>2.401.3</jenkins.version>
     <bom.artifactId>bom-2.401.x</bom.artifactId>
-    <bom.version>2244.vd60654536b_96</bom.version>
-
-    <!-- dependency versions -->
-    <authentication-tokens.version>1.53.v1c90fd9191a_b_</authentication-tokens.version>
-    <docker-commons.version>439.va_3cb_0a_6a_fb_29</docker-commons.version>
-    <google-oauth-plugin.version>1.0.9</google-oauth-plugin.version>
-    <kubernetes-client-api.version>6.8.1-224.vd388fca_4db_3b_</kubernetes-client-api.version>
+    <bom.version>2745.vc7b_fe4c876fa_</bom.version>
 
     <!-- maven plugins versions -->
     <maven-coveralls.version>4.3.0</maven-coveralls.version>
-    <maven-jacoco.version>0.8.10</maven-jacoco.version>
 
     <spotbugs.effort>Max</spotbugs.effort>
     <spotbugs.threshold>Low</spotbugs.threshold>
@@ -61,7 +57,6 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>kubernetes-client-api</artifactId>
-      <version>${kubernetes-client-api.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
@@ -81,7 +76,6 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>authentication-tokens</artifactId>
-      <version>${authentication-tokens.version}</version>
     </dependency>
 
     <!-- optional plugins -->
@@ -94,13 +88,11 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>google-oauth-plugin</artifactId>
-      <version>${google-oauth-plugin.version}</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>docker-commons</artifactId>
-      <version>${docker-commons.version}</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -126,11 +118,6 @@
         <scope>import</scope>
         <type>pom</type>
       </dependency>
-      <dependency>
-        <groupId>io.jenkins.plugins</groupId>
-        <artifactId>okhttp-api</artifactId>
-        <version>4.11.0-157.v6852a_a_fa_ec11</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -145,7 +132,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>${maven-jacoco.version}</version>
+        <version>${jacoco-maven-plugin.version}</version>
         <executions>
           <execution>
             <id>prepare-agent</id>
