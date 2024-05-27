@@ -3,7 +3,7 @@ package org.jenkinsci.plugins.kubernetes.auth.impl;
 import hudson.util.Secret;
 import io.fabric8.kubernetes.api.model.Config;
 import io.fabric8.kubernetes.client.utils.Serialization;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.kubernetes.auth.KubernetesAuthConfig;
 import org.jenkinsci.plugins.kubernetes.credentials.Utils;
 import org.junit.Rule;
