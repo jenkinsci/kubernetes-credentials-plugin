@@ -1,11 +1,11 @@
 package org.jenkinsci.plugins.kubernetes.credentials;
 
-import org.eclipse.jetty.ee8.nested.Request;
+import org.eclipse.jetty.ee9.nested.Request;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
