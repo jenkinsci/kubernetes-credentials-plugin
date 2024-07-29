@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.kubernetes.credentials;
 
+import jenkins.security.FIPS140;
 import org.apache.commons.codec.binary.Base64InputStream;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -83,6 +84,9 @@ public class HttpClientWithTLSOptionsFactory {
 
         try {
             if (skipTLSVerify) {
+                if (FIPS140.useCompliantAlgorithms() && uri.getScheme().equals("https")) {
+                    throw new IllegalArgumentException("Skipping TLS verification is not accepted in FIPS mode.");
+                }
                 builder.setSSLSocketFactory(getAlwaysTrustSSLFactory());
             } else if (caCertData != null) {
                 builder.setSSLSocketFactory(getVerifyCertSSLFactory(uri.getHost(), caCertData));
