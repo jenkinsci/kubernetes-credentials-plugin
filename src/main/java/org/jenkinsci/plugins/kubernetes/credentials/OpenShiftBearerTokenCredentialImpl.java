@@ -7,6 +7,7 @@ import hudson.util.Secret;
 import net.sf.json.JSONObject;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.Header;
+import org.apache.http.HttpHeaders;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -135,7 +136,9 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
 
         final HttpClientBuilder builder = HttpClientWithTLSOptionsFactory.getBuilder(uri, caCertData, skipTLSVerify);
         HttpGet authorize = new HttpGet(oauthServerURL + "?client_id=openshift-challenging-client&response_type=token");
-        authorize.setHeader("Authorization", getBasicAuthenticationHeader(getUsername(), getPassword()));
+        authorize.setHeader(HttpHeaders.AUTHORIZATION, getBasicAuthenticationHeader(getUsername(), getPassword()));
+
+        Utils.ensureFIPSCompliantURIRequest(authorize, skipTLSVerify);
         final CloseableHttpResponse response = builder.build().execute(authorize);
 
         if (response.getStatusLine().getStatusCode() != 302) {
@@ -154,6 +157,7 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
         URI uri = new URI(apiServerURL);
         final HttpClientBuilder builder = HttpClientWithTLSOptionsFactory.getBuilder(uri, caCertData, skipTLSVerify);
         HttpGet discover = new HttpGet(apiServerURL + "/.well-known/oauth-authorization-server");
+        Utils.ensureFIPSCompliantURIRequest(discover, skipTLSVerify);
         final CloseableHttpResponse response = builder.build().execute(discover);
         return JSONObject.fromObject(EntityUtils.toString(response.getEntity())).getString("authorization_endpoint");
     }

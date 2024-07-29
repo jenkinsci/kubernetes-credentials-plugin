@@ -1,6 +1,9 @@
 package org.jenkinsci.plugins.kubernetes.credentials;
 
+import jenkins.security.FIPS140;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.HttpUriRequest;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -45,5 +48,28 @@ public abstract class Utils {
 
     public static String encodeKey(Key key) {
         return encodeBase64(wrapPrivateKey(Base64.encodeBase64String(key.getEncoded())));
+    }
+
+    /**
+     * Ensure that the URI request is FIPS compliant for the given HttpUriRequest object and skipTLSVerify option.
+     * Throw an exception if the request is invalid.
+     * A request is considered valid if there is no potential leak of credentials (setting a credentials without using TLS) and
+     * if the TLS verification is not skipped.
+     * If FIPS mode is not enabled, this method does nothing.
+     *
+     * @param uriRequest     The request to validate
+     * @param skipTLSVerify  A flag indicating whether to skip TLS verification or not
+     * @throws IllegalArgumentException  If the request is invalid
+     */
+    public static void ensureFIPSCompliantURIRequest(HttpUriRequest uriRequest, boolean skipTLSVerify) {
+        if (FIPS140.useCompliantAlgorithms()) {
+            boolean isHttps = uriRequest.getURI().getScheme().equals("https");
+            if (!isHttps && uriRequest.containsHeader(HttpHeaders.AUTHORIZATION)) {
+                throw new IllegalArgumentException("Non-TLS connection is not accepted in FIPS mode when a credential is present.");
+            }
+            if (isHttps && skipTLSVerify) {
+                throw new IllegalArgumentException("Skipping TLS verification is not accepted in FIPS mode.");
+            }
+        }
     }
 }
