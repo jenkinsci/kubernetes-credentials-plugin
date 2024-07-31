@@ -85,7 +85,7 @@ public class HttpClientWithTLSOptionsFactory {
         try {
             if (skipTLSVerify) {
                 if (FIPS140.useCompliantAlgorithms() && uri.getScheme().equals("https")) {
-                    throw new IllegalArgumentException("Skipping TLS verification is not accepted in FIPS mode.");
+                    throw new IllegalArgumentException(Utils.FIPS140_SKIP_TLS_ERROR_MESSAGE);
                 }
                 builder.setSSLSocketFactory(getAlwaysTrustSSLFactory());
             } else if (caCertData != null) {

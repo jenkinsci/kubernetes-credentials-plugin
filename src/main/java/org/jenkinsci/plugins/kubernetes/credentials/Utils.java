@@ -13,6 +13,11 @@ import java.security.cert.X509Certificate;
 
 public abstract class Utils {
 
+    /**
+     * Error message used to indicate that skipping TLS verification is not accepted in FIPS mode.
+     */
+    public static String FIPS140_SKIP_TLS_ERROR_MESSAGE = "Skipping TLS verification is not accepted in FIPS mode.";
+
     public static String wrapWithMarker(String begin, String end, String encodedBody) {
         return new StringBuilder(begin).append("\n")
             .append(encodedBody).append("\n")
@@ -68,7 +73,7 @@ public abstract class Utils {
                 throw new IllegalArgumentException("Non-TLS connection is not accepted in FIPS mode when a credential is present.");
             }
             if (isHttps && skipTLSVerify) {
-                throw new IllegalArgumentException("Skipping TLS verification is not accepted in FIPS mode.");
+                throw new IllegalArgumentException(Utils.FIPS140_SKIP_TLS_ERROR_MESSAGE);
             }
         }
     }
