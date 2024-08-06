@@ -29,10 +29,12 @@ public abstract class AbstractHttpClientWithTLSOptionsFactoryFIPSTest {
             if (!shouldPass) {
                 fail("This test was expected to fail, reason: " + motivation);
             }
-        } catch (HttpClientWithTLSOptionsFactory.TLSConfigurationError e) {
+        } catch (IllegalArgumentException e) {
             if (shouldPass) {
                 fail("This test was expected to pass, reason: " + motivation);
             }
+        } catch (HttpClientWithTLSOptionsFactory.TLSConfigurationError e) {
+            fail("This test should not cause a TLSConfigurationError");
         }
     }
 }

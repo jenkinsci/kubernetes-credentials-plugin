@@ -138,7 +138,7 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
         HttpGet authorize = new HttpGet(oauthServerURL + "?client_id=openshift-challenging-client&response_type=token");
         authorize.setHeader(HttpHeaders.AUTHORIZATION, getBasicAuthenticationHeader(getUsername(), getPassword()));
 
-        Utils.ensureFIPSCompliantURIRequest(authorize, skipTLSVerify);
+        Utils.ensureFIPSCompliantURIRequest(authorize.getURI(), skipTLSVerify);
         final CloseableHttpResponse response = builder.build().execute(authorize);
 
         if (response.getStatusLine().getStatusCode() != 302) {
@@ -157,7 +157,7 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
         URI uri = new URI(apiServerURL);
         final HttpClientBuilder builder = HttpClientWithTLSOptionsFactory.getBuilder(uri, caCertData, skipTLSVerify);
         HttpGet discover = new HttpGet(apiServerURL + "/.well-known/oauth-authorization-server");
-        Utils.ensureFIPSCompliantURIRequest(discover, skipTLSVerify);
+        Utils.ensureFIPSCompliantURIRequest(discover.getURI(), skipTLSVerify);
         final CloseableHttpResponse response = builder.build().execute(discover);
         return JSONObject.fromObject(EntityUtils.toString(response.getEntity())).getString("authorization_endpoint");
     }

@@ -4,15 +4,12 @@ import static org.junit.Assert.fail;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.junit.Test;
 
 public abstract class AbstractUtilsFIPSTest {
     protected String scheme;
-
-    protected boolean auth;
 
     protected boolean skipTLSVerify;
 
@@ -21,9 +18,8 @@ public abstract class AbstractUtilsFIPSTest {
     protected String motivation;
 
     public AbstractUtilsFIPSTest(
-            String scheme, boolean auth, boolean skipTLSVerify, boolean shouldPass, String motivation) {
+            String scheme, boolean skipTLSVerify, boolean shouldPass, String motivation) {
         this.scheme = scheme;
-        this.auth = auth;
         this.skipTLSVerify = skipTLSVerify;
         this.shouldPass = shouldPass;
         this.motivation = motivation;
@@ -32,11 +28,8 @@ public abstract class AbstractUtilsFIPSTest {
     @Test
     public void ensureFIPSCompliantURIRequest() throws URISyntaxException {
         HttpUriRequest request = new HttpGet(new URI(scheme, "localhost", null, null));
-        if (auth) {
-            request.addHeader(HttpHeaders.AUTHORIZATION, "Basic xyz");
-        }
         try {
-            Utils.ensureFIPSCompliantURIRequest(request, skipTLSVerify);
+            Utils.ensureFIPSCompliantURIRequest(request.getURI(), skipTLSVerify);
             if (!shouldPass) {
                 fail("This test was expected to fail, reason: " + motivation);
             }

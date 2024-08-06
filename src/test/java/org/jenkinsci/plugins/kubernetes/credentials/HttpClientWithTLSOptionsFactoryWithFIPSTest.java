@@ -24,10 +24,10 @@ public class HttpClientWithTLSOptionsFactoryWithFIPSTest extends AbstractHttpCli
         return Arrays.asList(new Object[][] {
             // Valid use cases
             {"https", false, true, "TLS is used and the TLS verification is not skipped, this should be accepted"},
-            {"http", false, true, "Non-TLS configuration should be accepted"},
-            {"http", true, true, "Non-TLS configuration should be accepted"},
             // Invalid use cases
             {"https", true, false, "Skip TLS check is not accepted in FIPS mode"},
+            {"http", false, false, "TLS is mandatory when in FIPS mode"},
+            {"http", true, false, "TLS and TLS check are mandatory when in FIPS mode"},
         });
     }
 }

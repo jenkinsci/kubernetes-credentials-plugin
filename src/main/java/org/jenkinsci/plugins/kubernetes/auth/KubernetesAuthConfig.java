@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.kubernetes.auth;
 
-import jenkins.security.FIPS140;
 import org.jenkinsci.plugins.kubernetes.credentials.Utils;
 
 /**
@@ -21,9 +20,7 @@ public class KubernetesAuthConfig {
     private final boolean skipTlsVerify;
 
     public KubernetesAuthConfig(String serverUrl, String caCertificate, boolean skipTlsVerify) {
-        if (FIPS140.useCompliantAlgorithms() && skipTlsVerify && serverUrl.startsWith("https://")) {
-            throw new IllegalArgumentException(Utils.FIPS140_SKIP_TLS_ERROR_MESSAGE);
-        }
+        Utils.ensureFIPSCompliantRequest(serverUrl, skipTlsVerify);
         this.serverUrl = serverUrl;
         this.caCertificate = caCertificate;
         this.skipTlsVerify = skipTlsVerify;

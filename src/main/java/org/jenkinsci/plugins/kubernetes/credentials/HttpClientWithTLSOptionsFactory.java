@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.kubernetes.credentials;
 
-import jenkins.security.FIPS140;
 import org.apache.commons.codec.binary.Base64InputStream;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -80,13 +79,11 @@ public class HttpClientWithTLSOptionsFactory {
     }
 
     public static HttpClientBuilder getBuilder(URI uri, String caCertData, boolean skipTLSVerify) throws TLSConfigurationError {
+        Utils.ensureFIPSCompliantURIRequest(uri, skipTLSVerify);
         final HttpClientBuilder builder = HttpClients.custom().setRedirectStrategy(NO_HTTP_REDIRECT);
 
         try {
             if (skipTLSVerify) {
-                if (FIPS140.useCompliantAlgorithms() && uri.getScheme().equals("https")) {
-                    throw new IllegalArgumentException(Utils.FIPS140_SKIP_TLS_ERROR_MESSAGE);
-                }
                 builder.setSSLSocketFactory(getAlwaysTrustSSLFactory());
             } else if (caCertData != null) {
                 builder.setSSLSocketFactory(getVerifyCertSSLFactory(uri.getHost(), caCertData));

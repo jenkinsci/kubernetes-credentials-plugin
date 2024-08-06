@@ -26,8 +26,8 @@ public class OpenShiftBearerTokenCredentialWithFIPSTest extends AbstractOpenShif
             {"https", false, true, "TLS is used and the TLS verification is not skipped, this should be accepted"},
             // Invalid use cases
             {"https", true, false, "Skip TLS check is not accepted in FIPS mode"},
-            {"http", true, false, "Credentials must be used in combination with TLS when in FIPS mode"},
-            {"http", false, false, "Credentials must be used in combination with TLS when in FIPS mode"},
+            {"http", false, false, "TLS is mandatory when in FIPS mode"},
+            {"http", true, false, "TLS and TLS check are mandatory when in FIPS mode"},
         });
     }
 }
