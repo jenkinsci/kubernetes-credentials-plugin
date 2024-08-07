@@ -79,6 +79,7 @@ public class HttpClientWithTLSOptionsFactory {
     }
 
     public static HttpClientBuilder getBuilder(URI uri, String caCertData, boolean skipTLSVerify) throws TLSConfigurationError {
+        Utils.ensureFIPSCompliantURIRequest(uri, skipTLSVerify);
         final HttpClientBuilder builder = HttpClients.custom().setRedirectStrategy(NO_HTTP_REDIRECT);
 
         try {

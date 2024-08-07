@@ -1,5 +1,7 @@
 package org.jenkinsci.plugins.kubernetes.auth;
 
+import org.jenkinsci.plugins.kubernetes.credentials.Utils;
+
 /**
  * Configuration object for {@link KubernetesAuth} operations.
  */
@@ -18,6 +20,7 @@ public class KubernetesAuthConfig {
     private final boolean skipTlsVerify;
 
     public KubernetesAuthConfig(String serverUrl, String caCertificate, boolean skipTlsVerify) {
+        Utils.ensureFIPSCompliantRequest(serverUrl, skipTlsVerify);
         this.serverUrl = serverUrl;
         this.caCertificate = caCertificate;
         this.skipTlsVerify = skipTlsVerify;
