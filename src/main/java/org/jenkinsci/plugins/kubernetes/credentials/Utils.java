@@ -14,7 +14,7 @@ public abstract class Utils {
     /**
      * Error message used to indicate that skipping TLS verification is not accepted in FIPS mode.
      */
-    public static String FIPS140_ERROR_MESSAGE =
+    public static final String FIPS140_ERROR_MESSAGE =
             "Using an insecure connection and/or skipping TLS verification is not accepted in FIPS mode.";
 
     public static String wrapWithMarker(String begin, String end, String encodedBody) {
