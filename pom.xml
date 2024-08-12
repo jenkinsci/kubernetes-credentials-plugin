@@ -106,6 +106,14 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- OkHttp and MockWebServer for mocking HTTP servers -->
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>mockwebserver</artifactId>
+      <version>4.9.3</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <!-- just to fix enforcer RequireUpperBoundDeps -->
