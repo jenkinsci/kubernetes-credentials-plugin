@@ -4,11 +4,10 @@ package org.jenkinsci.plugins.kubernetes.credentials;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpsServer;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,60 +17,64 @@ import java.util.regex.Pattern;
  * Date: 13/08/24
  * Time: 11:24 am
  */
-public class OpenShiftBearerTokenCredentialTestMockServer {
+public class OpenShiftBearerTokenCredentialMockServer {
 
-	public HttpServer setupServer() throws IOException {
-		HttpServer server = HttpServer
-				.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
-
+	public static void registerHttpHandlers(HttpServer server) throws IOException {
 		BiConsumer<String, HttpHandler> register = server::createContext;
 
-		register.accept("/bad-location/oauth/authorize", this::badLocationHandler);
-		register.accept("/missing-location/oauth/authorize", this::missingLocationHandler);
-		register.accept("/bad-response/oauth/authorize", this::badResponseHandler);
-		register.accept("/valid-response/oauth/authorize", this::validResponseHandler1);
-		register.accept("/valid-response2/oauth/authorize", this::validResponseHandler2);
-		register.accept("/", this::defaultHandler);
-
-		return server;
+		register.accept("/bad-location/oauth/authorize",
+		                OpenShiftBearerTokenCredentialMockServer::badLocationHandler);
+		register.accept("/missing-location/oauth/authorize", OpenShiftBearerTokenCredentialMockServer::missingLocationHandler);
+		register.accept("/bad-response/oauth/authorize", OpenShiftBearerTokenCredentialMockServer::badResponseHandler);
+		register.accept("/valid-response/oauth/authorize", OpenShiftBearerTokenCredentialMockServer::validResponseHandler1);
+		register.accept("/valid-response2/oauth/authorize", OpenShiftBearerTokenCredentialMockServer::validResponseHandler2);
+		register.accept("/", OpenShiftBearerTokenCredentialMockServer::defaultHandler);
 	}
 
-	private void badLocationHandler(HttpExchange he) throws IOException {
+	private static void badLocationHandler(HttpExchange he) throws IOException {
 		String redirectURL = "bad";
 		he.getResponseHeaders().set("Location", redirectURL);
 		he.sendResponseHeaders(302, -1);
 	}
 
-	private void missingLocationHandler(HttpExchange he) throws IOException {
+	private static void missingLocationHandler(HttpExchange he) throws IOException {
 		he.sendResponseHeaders(302, -1); // No Location header
 	}
 
-	private void badResponseHandler(HttpExchange he) throws IOException {
+	private static void badResponseHandler(HttpExchange he) throws IOException {
 		he.sendResponseHeaders(400, -1);
 	}
 
-	private void validResponseHandler1(HttpExchange he) throws IOException {
+	private static void validResponseHandler1(HttpExchange he) throws IOException {
 		String redirectURL = "http://my-service/#access_token=1234&expires_in=86400";
 		he.getResponseHeaders().set("Location", redirectURL);
 		he.sendResponseHeaders(302, -1);
 	}
 
-	private void validResponseHandler2(HttpExchange he) throws IOException {
+	private static void validResponseHandler2(HttpExchange he) throws IOException {
 		String redirectURL = "http://my-service/#access_token=1235&expires_in=86400";
 		he.getResponseHeaders().set("Location", redirectURL);
 		he.sendResponseHeaders(302, -1);
 	}
 
-	private void defaultHandler(HttpExchange he) throws IOException {
+	private static void defaultHandler(HttpExchange he) throws IOException {
 		String path = he.getRequestURI().getPath();
 		Pattern pattern = Pattern.compile("(.*)/.well-known/oauth-authorization-server");
 		Matcher matcher = pattern.matcher(path);
 
+		String scheme = "http";
+		if(he.getHttpContext().getServer() instanceof HttpsServer){
+			scheme = "https";
+		}
+
+		String hostname = "localhost";
+		int port = he.getLocalAddress().getPort();
+
 		if (matcher.find()) {
 			String responseToClient = "{\n" +
-			                          "  \"issuer\": \"" + "http:/" + he.getLocalAddress() + "/\",\n" +
-			                          "  \"authorization_endpoint\": \"" + "http:/" + he.getLocalAddress()+ matcher.group(1) + "/oauth/authorize\",\n" +
-			                          "  \"token_endpoint\": \"" + "http:/" + he.getLocalAddress() + "/oauth/token\",\n" +
+			                          "  \"issuer\": \"" + scheme + "://" + hostname + ":" + port + "/\",\n" +
+			                          "  \"authorization_endpoint\": \"" + scheme + "://" + hostname + ":" + port + matcher.group(1) + "/oauth/authorize\",\n" +
+			                          "  \"token_endpoint\": \"" + scheme + "://" + hostname + ":" + port + "/oauth/token\",\n" +
 			                          "  \"scopes_supported\": [\n" +
 			                          "    \"user:check-access\",\n" +
 			                          "    \"user:full\",\n" +

@@ -10,6 +10,7 @@ import org.junit.rules.ExpectedException;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -36,7 +37,8 @@ public class OpenShiftBearerTokenCredentialTest {
 
     @Before
     public void prepareFakeOAuthServer() throws Exception {
-        server = new OpenShiftBearerTokenCredentialTestMockServer().setupServer();
+        server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
+        OpenShiftBearerTokenCredentialMockServer.registerHttpHandlers(server);
         server.start();
         mockserverBaseUrl = "http:/"+server.getAddress()+"/";
     }
