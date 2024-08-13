@@ -15,6 +15,8 @@ import org.jvnet.hudson.test.JenkinsRule;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
+import com.sun.net.httpserver.HttpServer;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -27,13 +29,16 @@ public class OpenShiftBearerTokenCredentialTest {
     protected static final String USERNAME = "max.laverse";
     protected static final String PASSWORD = "super-secret";
 
-    @Rule
-    public JenkinsRule r = new JenkinsRule();
+//    @Rule
+//    public JenkinsRule r = new JenkinsRule();
 
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
 
     private Server server;
+
+    private HttpServer server2;
+    private String mockserverBaseUrl;
 
     @Before
     public void prepareFakeOAuthServer() throws Exception {
@@ -44,6 +49,12 @@ public class OpenShiftBearerTokenCredentialTest {
         context.addServlet(new ServletHolder(new MockHttpServlet()), "/*");
         server.setHandler(context);
         server.start();
+
+
+        server2 = new OpenShiftBearerTokenCredentialTestMockServer().setupServer();
+        server2.start();
+
+        mockserverBaseUrl = "http:/"+server2.getAddress()+"/";
     }
 
     @After
@@ -54,7 +65,7 @@ public class OpenShiftBearerTokenCredentialTest {
     @Test
     public void testValidResponse() throws IOException {
         OpenShiftBearerTokenCredentialImpl t = new OpenShiftBearerTokenCredentialImpl(CredentialsScope.GLOBAL, CREDENTIAL_ID, "sample", USERNAME, PASSWORD);
-        String token = t.getToken(server.getURI() + "valid-response", null, true);
+        String token = t.getToken(mockserverBaseUrl + "valid-response", null, true);
         assertEquals("1234", token);
     }
 
