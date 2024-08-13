@@ -27,9 +27,32 @@ public abstract class AbstractUtilsFIPSTest {
 
     @Test
     public void ensureFIPSCompliantURIRequest() throws URISyntaxException {
-        HttpUriRequest request = new HttpGet(new URI(scheme, "localhost", null, null));
         try {
-            Utils.ensureFIPSCompliantURIRequest(request.getURI(), skipTLSVerify);
+            if(scheme != null) {
+                HttpUriRequest request = new HttpGet(new URI(scheme, "localhost", null, null));
+                URI uri = request.getURI();
+                Utils.ensureFIPSCompliantURIRequest(uri, skipTLSVerify);
+            } else {
+                Utils.ensureFIPSCompliantURIRequest(null, skipTLSVerify);
+            }
+            if (!shouldPass) {
+                fail("This test was expected to fail, reason: " + motivation);
+            }
+        } catch (IllegalArgumentException e) {
+            if (shouldPass) {
+                fail("This test was expected to pass, reason: " + motivation);
+            }
+        }
+    }
+
+    @Test
+    public void ensureFIPSCompliantRequest() {
+        try {
+            if(scheme != null) {
+                Utils.ensureFIPSCompliantRequest(scheme + "://localhost", skipTLSVerify);
+            } else {
+                Utils.ensureFIPSCompliantRequest(null, skipTLSVerify);
+            }
             if (!shouldPass) {
                 fail("This test was expected to fail, reason: " + motivation);
             }

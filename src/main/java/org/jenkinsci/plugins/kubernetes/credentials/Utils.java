@@ -66,7 +66,10 @@ public abstract class Utils {
      * @throws IllegalArgumentException If the request is invalid
      */
     public static void ensureFIPSCompliantURIRequest(URI uri, boolean skipTLSVerify) {
-        boolean isInsecure = uri.getScheme().equals("http");
+        boolean isInsecure = false;
+        if (uri != null) {
+            isInsecure = "http".equals(uri.getScheme());
+        }
         ensureFIPSCompliant(isInsecure, skipTLSVerify);
     }
 
@@ -82,7 +85,10 @@ public abstract class Utils {
      * @throws IllegalArgumentException If the request is invalid
      */
     public static void ensureFIPSCompliantRequest(String stringRequest, boolean skipTLSVerify) {
-        boolean isInsecure = stringRequest.startsWith("http://");
+        boolean isInsecure = false;
+        if(stringRequest != null) {
+            isInsecure = stringRequest.startsWith("http://");
+        }
         ensureFIPSCompliant(isInsecure, skipTLSVerify);
     }
 
