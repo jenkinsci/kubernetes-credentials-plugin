@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.IOException;
 
@@ -23,6 +24,9 @@ public class OpenShiftBearerTokenCredentialTest {
     protected static final String CREDENTIAL_ID = "cred1234";
     protected static final String USERNAME = "max.laverse";
     protected static final String PASSWORD = "super-secret";
+
+    @Rule
+    public JenkinsRule r = new JenkinsRule();
 
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
