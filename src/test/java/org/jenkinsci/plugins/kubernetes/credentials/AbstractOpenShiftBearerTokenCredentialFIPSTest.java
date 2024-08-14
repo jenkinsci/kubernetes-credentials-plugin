@@ -69,11 +69,10 @@ public abstract class AbstractOpenShiftBearerTokenCredentialFIPSTest {
         if ("https".equals(scheme)) {
             server = HttpsServer.create(address, 0);
             setupHttps((HttpsServer) server);
-            OpenShiftBearerTokenCredentialMockServer.registerHttpHandlers(server);
         } else {
             server = HttpServer.create(address, 0);
-            OpenShiftBearerTokenCredentialMockServer.registerHttpHandlers(server);
         }
+        OpenShiftBearerTokenCredentialMockServer.registerHttpHandlers(server);
 
         server.start();
     }
