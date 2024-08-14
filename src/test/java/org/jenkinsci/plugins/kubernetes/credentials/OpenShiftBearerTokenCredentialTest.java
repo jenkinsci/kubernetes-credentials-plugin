@@ -32,14 +32,12 @@ public class OpenShiftBearerTokenCredentialTest {
     public ExpectedException expectedEx = ExpectedException.none();
 
     private HttpServer server;
-    private String mockserverBaseUrl;
 
     @Before
     public void prepareFakeOAuthServer() throws Exception {
         server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
         OpenShiftBearerTokenCredentialMockServer.registerHttpHandlers(server);
         server.start();
-        mockserverBaseUrl = "http:/"+server.getAddress()+"/";
     }
 
     @After
@@ -47,19 +45,24 @@ public class OpenShiftBearerTokenCredentialTest {
         server.stop(0);
     }
 
+    private String getURI() {
+        InetSocketAddress address = server.getAddress();
+        return "http://" + address.getHostString() + ":" + address.getPort() + "/";
+    }
+
     @Test
     public void testValidResponse() throws IOException {
         OpenShiftBearerTokenCredentialImpl t = new OpenShiftBearerTokenCredentialImpl(CredentialsScope.GLOBAL, CREDENTIAL_ID, "sample", USERNAME, PASSWORD);
-        String token = t.getToken(mockserverBaseUrl + "valid-response", null, true);
+        String token = t.getToken(getURI() + "valid-response", null, true);
         assertEquals("1234", token);
     }
 
     @Test
     public void testMultipleCachedTokens() throws IOException {
         OpenShiftBearerTokenCredentialImpl t = new OpenShiftBearerTokenCredentialImpl(CredentialsScope.GLOBAL, CREDENTIAL_ID, "sample", USERNAME, PASSWORD);
-        String token1 = t.getToken(mockserverBaseUrl + "valid-response", null, true);
-        String token2 = t.getToken(mockserverBaseUrl + "valid-response2", null, true);
-        String token3 = t.getToken(mockserverBaseUrl + "valid-response", null, true);
+        String token1 = t.getToken(getURI() + "valid-response", null, true);
+        String token2 = t.getToken(getURI() + "valid-response2", null, true);
+        String token3 = t.getToken(getURI() + "valid-response", null, true);
         assertEquals("1234", token1);
         assertEquals("1235", token2);
         assertEquals("1234", token3);
@@ -71,7 +74,7 @@ public class OpenShiftBearerTokenCredentialTest {
         expectedEx.expectMessage("The response from the OAuth server was invalid: The OAuth service didn't respond with a redirection but with '400: Bad Request'");
 
         OpenShiftBearerTokenCredentialImpl t = new OpenShiftBearerTokenCredentialImpl(CredentialsScope.GLOBAL, CREDENTIAL_ID, "sample", USERNAME, PASSWORD);
-        t.getToken(mockserverBaseUrl + "bad-response", null, true);
+        t.getToken(getURI() + "bad-response", null, true);
     }
 
     @Test
@@ -80,7 +83,7 @@ public class OpenShiftBearerTokenCredentialTest {
         expectedEx.expectMessage("The response from the OAuth server was invalid: The OAuth service didn't respond with location header");
 
         OpenShiftBearerTokenCredentialImpl t = new OpenShiftBearerTokenCredentialImpl(CredentialsScope.GLOBAL, CREDENTIAL_ID, "sample", USERNAME, PASSWORD);
-        t.getToken(mockserverBaseUrl + "missing-location", null, true);
+        t.getToken(getURI() + "missing-location", null, true);
     }
 
     @Test
@@ -89,7 +92,7 @@ public class OpenShiftBearerTokenCredentialTest {
         expectedEx.expectMessage("The response from the OAuth server was invalid: The response contained no token");
 
         OpenShiftBearerTokenCredentialImpl t = new OpenShiftBearerTokenCredentialImpl(CredentialsScope.GLOBAL, CREDENTIAL_ID, "sample", USERNAME, PASSWORD);
-        t.getToken(mockserverBaseUrl + "bad-location", null, true);
+        t.getToken(getURI() + "bad-location", null, true);
     }
 
     @Test
