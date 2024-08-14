@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.kubernetes.credentials;
 
 import com.cloudbees.plugins.credentials.CredentialsScope;
+import com.sun.net.httpserver.HttpServer;
 import hudson.util.Secret;
 import org.junit.After;
 import org.junit.Before;
@@ -11,8 +12,6 @@ import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-
-import com.sun.net.httpserver.HttpServer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
