@@ -65,7 +65,7 @@ public abstract class AbstractOpenShiftBearerTokenCredentialFIPSTest {
             fail("Unable to find keystore.jks");
         }
 
-        InetSocketAddress address = new InetSocketAddress("localhost", 0);
+        InetSocketAddress address = new InetSocketAddress(0);
         if ("https".equals(scheme)) {
             server = HttpsServer.create(address, 0);
             setupHttps((HttpsServer) server);
