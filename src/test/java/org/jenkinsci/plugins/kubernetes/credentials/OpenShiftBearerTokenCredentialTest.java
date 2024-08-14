@@ -35,7 +35,8 @@ public class OpenShiftBearerTokenCredentialTest {
 
     @Before
     public void prepareFakeOAuthServer() throws Exception {
-        server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
+        InetSocketAddress address = new InetSocketAddress("localhost", 0);
+        server = HttpServer.create(address, 0);
         OpenShiftBearerTokenCredentialMockServer.registerHttpHandlers(server);
         server.start();
     }

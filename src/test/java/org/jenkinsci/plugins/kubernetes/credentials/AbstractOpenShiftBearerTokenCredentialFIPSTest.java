@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.jvnet.hudson.test.FlagRule;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.security.KeyStore;
@@ -63,16 +64,16 @@ public abstract class AbstractOpenShiftBearerTokenCredentialFIPSTest {
             fail("Unable to find keystore.jks");
         }
 
+        InetSocketAddress address = new InetSocketAddress("localhost", 0);
         if ("https".equals(scheme)) {
-            server = HttpsServer.create(new InetSocketAddress("localhost", 0), 0);
+            server = HttpsServer.create(address, 0);
             setupHttps((HttpsServer) server);
             OpenShiftBearerTokenCredentialMockServer.registerHttpHandlers(server);
         } else {
-            server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
+            server = HttpServer.create(address, 0);
             OpenShiftBearerTokenCredentialMockServer.registerHttpHandlers(server);
         }
 
-        server.setExecutor(null); // Creates a default executor
         server.start();
     }
 
@@ -80,7 +81,9 @@ public abstract class AbstractOpenShiftBearerTokenCredentialFIPSTest {
         SSLContext sslContext = SSLContext.getInstance("TLS");
         KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
         KeyStore ks = KeyStore.getInstance("JKS");
-        ks.load(keystore.openStream(), "unittest".toCharArray());
+        try (InputStream is = keystore.openStream()) {
+            ks.load(is, "unittest".toCharArray());
+        }
         kmf.init(ks, "unittest".toCharArray());
 
         sslContext.init(kmf.getKeyManagers(), null, null);
@@ -88,7 +91,7 @@ public abstract class AbstractOpenShiftBearerTokenCredentialFIPSTest {
     }
 
     @After
-    public void unprepareFakeOAuthServer() throws Exception {
+    public void unprepareFakeOAuthServer() {
         server.stop(0);
     }
 
