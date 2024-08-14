@@ -59,16 +59,15 @@ public class OpenShiftBearerTokenCredentialMockServer {
 
     private static void defaultHandler(HttpExchange he) throws IOException {
         String path = he.getRequestURI().getPath();
-        Pattern pattern = Pattern.compile("(.*)/.well-known/oauth-authorization-server");
-        Matcher matcher = pattern.matcher(path);
-
-        String scheme = he.getHttpContext().getServer() instanceof HttpsServer ? "https" : "http";
-        String rootURL = scheme + "://localhost:" + he.getLocalAddress().getPort() + "/";
-
-        if (matcher.find()) {
+        Pattern r = Pattern.compile("(.*)/.well-known/oauth-authorization-server");
+        // Now create matcher object.
+        Matcher m = r.matcher(path);
+        if (m.find()) {
+            String scheme = he.getHttpContext().getServer() instanceof HttpsServer ? "https" : "http";
+            String rootURL = scheme + "://localhost:" + he.getLocalAddress().getPort() + "/";
             String responseToClient = "{\n" +
                     "  \"issuer\": \"" + rootURL + "\",\n" +
-                    "  \"authorization_endpoint\": \"" + rootURL + "/" + matcher.group(1) + "/oauth/authorize\",\n" +
+                    "  \"authorization_endpoint\": \"" + rootURL + "/" + m.group(1) + "/oauth/authorize\",\n" +
                     "  \"token_endpoint\": \"" + rootURL + "/oauth/token\",\n" +
                     "  \"scopes_supported\": [\n" +
                     "    \"user:check-access\",\n" +
