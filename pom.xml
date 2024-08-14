@@ -51,9 +51,6 @@
 
     <spotbugs.effort>Max</spotbugs.effort>
     <spotbugs.threshold>Low</spotbugs.threshold>
-    <!--TODO Until is included in parent pom -->
-    <maven.compiler.release>17</maven.compiler.release>
-    <jenkins-test-harness.version>2250.v03a_1295b_0a_30</jenkins-test-harness.version>
   </properties>
 
   <dependencies>
