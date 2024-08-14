@@ -25,7 +25,13 @@ public abstract class AbstractHttpClientWithTLSOptionsFactoryFIPSTest {
     @Test
     public void testCreateKubernetesAuthConfig() throws URISyntaxException {
         try {
-            HttpClientWithTLSOptionsFactory.getBuilder(new URI(scheme, "localhost", null, null), null, skipTLSVerify);
+            URI uri;
+            if (scheme != null) {
+                uri = new URI(scheme, "localhost", null, null);
+            } else {
+                uri = null;
+            }
+            HttpClientWithTLSOptionsFactory.getBuilder(uri, null, skipTLSVerify);
             if (!shouldPass) {
                 fail("This test was expected to fail, reason: " + motivation);
             }

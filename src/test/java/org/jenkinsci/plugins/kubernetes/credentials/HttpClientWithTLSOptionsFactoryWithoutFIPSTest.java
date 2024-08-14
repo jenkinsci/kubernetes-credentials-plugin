@@ -23,6 +23,7 @@ public class HttpClientWithTLSOptionsFactoryWithoutFIPSTest extends AbstractHttp
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             // Valid use cases
+            {null, false, true, "Not in FIPS mode, any combination should be valid"},
             {"https", false, true, "Not in FIPS mode, any combination should be valid"},
             {"http", false, true, "Not in FIPS mode, any combination should be valid"},
             {"http", true, true, "Not in FIPS mode, any combination should be valid"},

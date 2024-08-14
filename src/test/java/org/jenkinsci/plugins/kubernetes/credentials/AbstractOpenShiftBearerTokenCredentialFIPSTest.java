@@ -4,6 +4,7 @@ import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsServer;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -51,7 +52,7 @@ public abstract class AbstractOpenShiftBearerTokenCredentialFIPSTest {
 
 
     public AbstractOpenShiftBearerTokenCredentialFIPSTest(
-            String scheme, boolean skipTLSVerify, boolean shouldPass, String motivation) {
+            @NonNull String scheme, boolean skipTLSVerify, boolean shouldPass, String motivation) {
         this.scheme = scheme;
         this.skipTLSVerify = skipTLSVerify;
         this.shouldPass = shouldPass;

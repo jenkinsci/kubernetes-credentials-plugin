@@ -20,6 +20,7 @@ public class UtilsWithoutFIPSTest extends AbstractUtilsFIPSTest {
     @Parameterized.Parameters
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
+            {null, true, true, "Not in FIPS mode, any combination should be valid"},
             {"https", true, true, "Not in FIPS mode, any combination should be valid"},
             {"https", false, true, "Not in FIPS mode, any combination should be valid"},
             {"http", true, true, "Not in FIPS mode, any combination should be valid"},

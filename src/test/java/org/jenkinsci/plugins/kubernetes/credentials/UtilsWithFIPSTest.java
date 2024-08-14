@@ -22,6 +22,7 @@ public class UtilsWithFIPSTest extends AbstractUtilsFIPSTest {
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             // Valid use cases
+            {null, false, true, "No URL provided and the TLS verification is not skipped, this should be accepted"},
             {"https", false, true, "TLS is used and the TLS verification is not skipped, this should be accepted"},
             // Invalid use cases
             {"https", true, false, "Skip TLS check is not accepted in FIPS mode"},
