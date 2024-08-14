@@ -36,10 +36,9 @@ public class MockHttpServlet extends HttpServlet {
                 // Now create matcher object.
                 Matcher m = r.matcher(request.getPathInfo());
                 if (m.find()) {
-                    Request jettyRequest = (Request) request;
-                    String rootUrl = jettyRequest.getHttpURI().getScheme() + "://" + jettyRequest.getHttpURI().getHost() + ":" + jettyRequest.getHttpURI().getPort();
+	                String rootUrl = getRootURL(request);;
 
-                    String responseToClient = "{\n" +
+	                String responseToClient = "{\n" +
                             "  \"issuer\": \"" + rootUrl + "\",\n" +
                             "  \"authorization_endpoint\": \"" + rootUrl + "/" + m.group(1) + "/oauth/authorize\",\n" +
                             "  \"token_endpoint\": \"" + rootUrl + "/oauth/token\",\n" +
@@ -72,5 +71,13 @@ public class MockHttpServlet extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Bad test: unknown path " + request.getPathInfo());
                 break;
         }
+    }
+
+    public String getRootURL(HttpServletRequest request) {
+        String scheme = request.getScheme();
+        String serverName = request.getServerName();
+        int serverPort = request.getServerPort();
+
+        return scheme + "://" + serverName + ":" + serverPort;
     }
 }
