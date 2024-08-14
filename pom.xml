@@ -42,9 +42,7 @@
     <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
 
     <!-- jenkins versions -->
-    <jenkins.version>2.472</jenkins.version>
-    <jenkins-test-harness.version>2254.vcff7a_d4969e5</jenkins-test-harness.version>
-    <maven.compiler.release>17</maven.compiler.release>
+    <jenkins.version>2.426.3</jenkins.version>
     <bom.artifactId>bom-2.426.x</bom.artifactId>
     <bom.version>3208.vb_21177d4b_cd9</bom.version>
 
