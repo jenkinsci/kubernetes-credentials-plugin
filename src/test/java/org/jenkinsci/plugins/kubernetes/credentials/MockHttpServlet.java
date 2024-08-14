@@ -1,7 +1,5 @@
 package org.jenkinsci.plugins.kubernetes.credentials;
 
-import org.eclipse.jetty.server.Request;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
