@@ -36,10 +36,13 @@ public class MockHttpServlet extends HttpServlet {
                 // Now create matcher object.
                 Matcher m = r.matcher(request.getPathInfo());
                 if (m.find()) {
+                    Request jettyRequest = (Request) request;
+                    String rootUrl = jettyRequest.getHttpURI().getScheme() + "://" + jettyRequest.getHttpURI().getHost() + ":" + jettyRequest.getHttpURI().getPort();
+
                     String responseToClient = "{\n" +
-                            "  \"issuer\": \"" + ((Request) request).getRootURL() + "\",\n" +
-                            "  \"authorization_endpoint\": \"" + ((Request) request).getRootURL() + "/" + m.group(1) + "/oauth/authorize\",\n" +
-                            "  \"token_endpoint\": \"" + ((Request) request).getRootURL() + "/oauth/token\",\n" +
+                            "  \"issuer\": \"" + rootUrl + "\",\n" +
+                            "  \"authorization_endpoint\": \"" + rootUrl + "/" + m.group(1) + "/oauth/authorize\",\n" +
+                            "  \"token_endpoint\": \"" + rootUrl + "/oauth/token\",\n" +
                             "  \"scopes_supported\": [\n" +
                             "    \"user:check-access\",\n" +
                             "    \"user:full\",\n" +
