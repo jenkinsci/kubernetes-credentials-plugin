@@ -43,8 +43,7 @@ public class OpenShiftBearerTokenCredentialTest {
     }
 
     @After
-    public void unprepareFakeOAuthServer() throws Exception {
-        //stop the server with zero delay
+    public void unprepareFakeOAuthServer() {
         server.stop(0);
     }
 
