@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.kubernetes.credentials;
 
 import com.cloudbees.plugins.credentials.CredentialsScope;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -56,7 +57,7 @@ public abstract class AbstractOpenShiftBearerTokenCredentialFIPSTest {
 
 
     public AbstractOpenShiftBearerTokenCredentialFIPSTest(
-            String scheme, boolean skipTLSVerify, boolean shouldPass, String motivation) {
+            @NonNull String scheme, boolean skipTLSVerify, boolean shouldPass, String motivation) {
         this.scheme = scheme;
         this.skipTLSVerify = skipTLSVerify;
         this.shouldPass = shouldPass;
