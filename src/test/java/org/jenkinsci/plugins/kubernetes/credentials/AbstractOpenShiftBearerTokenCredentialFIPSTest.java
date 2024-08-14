@@ -1,17 +1,10 @@
 package org.jenkinsci.plugins.kubernetes.credentials;
 
 import com.cloudbees.plugins.credentials.CredentialsScope;
+import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpsConfigurator;
+import com.sun.net.httpserver.HttpsServer;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
-import org.eclipse.jetty.server.SecureRequestCustomizer;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.SslConnectionFactory;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -19,7 +12,13 @@ import org.junit.Test;
 import org.jvnet.hudson.test.FlagRule;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.net.URL;
+import java.security.KeyStore;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
 
 import static org.junit.Assert.fail;
 
@@ -49,11 +48,7 @@ public abstract class AbstractOpenShiftBearerTokenCredentialFIPSTest {
 
     protected String motivation;
 
-    private Server server;
-
-    private ServerConnector sslConnector;
-
-    private ServerConnector serverConnector;
+    private HttpServer server;
 
 
     public AbstractOpenShiftBearerTokenCredentialFIPSTest(
@@ -69,30 +64,35 @@ public abstract class AbstractOpenShiftBearerTokenCredentialFIPSTest {
         if (keystore == null) {
             fail("Unable to find keystore.jks");
         }
-        server = new Server();
 
-        HttpConfiguration httpsConfig = new HttpConfiguration();
-        httpsConfig.addCustomizer(new SecureRequestCustomizer());
+        InetSocketAddress address = new InetSocketAddress(0);
+        if ("https".equals(scheme)) {
+            server = HttpsServer.create(address, 0);
+            setupHttps((HttpsServer) server);
+        } else {
+            server = HttpServer.create(address, 0);
+        }
+        OpenShiftBearerTokenCredentialMockServer.registerHttpHandlers(server);
 
-        SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
-        sslContextFactory.setKeyStorePath(keystore.toExternalForm());
-        sslContextFactory.setKeyManagerPassword("unittest");
-        sslContextFactory.setKeyStorePassword("unittest");
-
-        sslConnector = new ServerConnector(server, new SslConnectionFactory(sslContextFactory, "http/1.1"), new HttpConnectionFactory(httpsConfig));
-        serverConnector = new ServerConnector(server);
-        server.setConnectors(new Connector[]{serverConnector, sslConnector});
-
-        ServletContextHandler context = new ServletContextHandler();
-        context.setContextPath("/");
-        context.addServlet(new ServletHolder(new MockHttpServlet()), "/*");
-        server.setHandler(context);
         server.start();
     }
 
+    private void setupHttps(HttpsServer httpsServer) throws Exception {
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+        KeyStore ks = KeyStore.getInstance("JKS");
+        try (InputStream is = keystore.openStream()) {
+            ks.load(is, "unittest".toCharArray());
+        }
+        kmf.init(ks, "unittest".toCharArray());
+
+        sslContext.init(kmf.getKeyManagers(), null, null);
+        httpsServer.setHttpsConfigurator(new HttpsConfigurator(sslContext));
+    }
+
     @After
-    public void unprepareFakeOAuthServer() throws Exception {
-        server.stop();
+    public void unprepareFakeOAuthServer() {
+        server.stop(0);
     }
 
     @Test
@@ -100,13 +100,7 @@ public abstract class AbstractOpenShiftBearerTokenCredentialFIPSTest {
         OpenShiftBearerTokenCredentialImpl cred;
         cred = new OpenShiftBearerTokenCredentialImpl(CredentialsScope.GLOBAL, "id", "description", "username", "password");
         try {
-            int port;
-            if ("https".equals(scheme)) {
-                port = sslConnector.getLocalPort();
-            } else {
-                port = serverConnector.getLocalPort();
-            }
-            cred.getToken(scheme + "://localhost:" + port + "/valid-response", null, skipTLSVerify);
+            cred.getToken(scheme + "://localhost:" + server.getAddress().getPort() + "/valid-response", null, skipTLSVerify);
             if (!shouldPass) {
                 fail("This test was expected to fail, reason: " + motivation);
             }
