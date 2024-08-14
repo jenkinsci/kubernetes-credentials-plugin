@@ -1,11 +1,9 @@
 package org.jenkinsci.plugins.kubernetes.credentials;
 
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpsServer;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.function.BiConsumer;
@@ -22,12 +20,14 @@ public class OpenShiftBearerTokenCredentialMockServer {
 	public static void registerHttpHandlers(HttpServer server) throws IOException {
 		BiConsumer<String, HttpHandler> register = server::createContext;
 
-		register.accept("/bad-location/oauth/authorize",
-		                OpenShiftBearerTokenCredentialMockServer::badLocationHandler);
-		register.accept("/missing-location/oauth/authorize", OpenShiftBearerTokenCredentialMockServer::missingLocationHandler);
+		register.accept("/bad-location/oauth/authorize", OpenShiftBearerTokenCredentialMockServer::badLocationHandler);
+		register.accept(
+				"/missing-location/oauth/authorize", OpenShiftBearerTokenCredentialMockServer::missingLocationHandler);
 		register.accept("/bad-response/oauth/authorize", OpenShiftBearerTokenCredentialMockServer::badResponseHandler);
-		register.accept("/valid-response/oauth/authorize", OpenShiftBearerTokenCredentialMockServer::validResponseHandler1);
-		register.accept("/valid-response2/oauth/authorize", OpenShiftBearerTokenCredentialMockServer::validResponseHandler2);
+		register.accept(
+				"/valid-response/oauth/authorize", OpenShiftBearerTokenCredentialMockServer::validResponseHandler1);
+		register.accept(
+				"/valid-response2/oauth/authorize", OpenShiftBearerTokenCredentialMockServer::validResponseHandler2);
 		register.accept("/", OpenShiftBearerTokenCredentialMockServer::defaultHandler);
 	}
 
@@ -63,7 +63,7 @@ public class OpenShiftBearerTokenCredentialMockServer {
 		Matcher matcher = pattern.matcher(path);
 
 		String scheme = "http";
-		if(he.getHttpContext().getServer() instanceof HttpsServer){
+		if (he.getHttpContext().getServer() instanceof HttpsServer) {
 			scheme = "https";
 		}
 
@@ -71,30 +71,30 @@ public class OpenShiftBearerTokenCredentialMockServer {
 		int port = he.getLocalAddress().getPort();
 
 		if (matcher.find()) {
-			String responseToClient = "{\n" +
-			                          "  \"issuer\": \"" + scheme + "://" + hostname + ":" + port + "/\",\n" +
-			                          "  \"authorization_endpoint\": \"" + scheme + "://" + hostname + ":" + port + matcher.group(1) + "/oauth/authorize\",\n" +
-			                          "  \"token_endpoint\": \"" + scheme + "://" + hostname + ":" + port + "/oauth/token\",\n" +
-			                          "  \"scopes_supported\": [\n" +
-			                          "    \"user:check-access\",\n" +
-			                          "    \"user:full\",\n" +
-			                          "    \"user:info\",\n" +
-			                          "    \"user:list-projects\",\n" +
-			                          "    \"user:list-scoped-projects\"\n" +
-			                          "  ],\n" +
-			                          "  \"response_types_supported\": [\n" +
-			                          "    \"code\",\n" +
-			                          "    \"token\"\n" +
-			                          "  ],\n" +
-			                          "  \"grant_types_supported\": [\n" +
-			                          "    \"authorization_code\",\n" +
-			                          "    \"implicit\"\n" +
-			                          "  ],\n" +
-			                          "  \"code_challenge_methods_supported\": [\n" +
-			                          "    \"plain\",\n" +
-			                          "    \"S256\"\n" +
-			                          "  ]\n" +
-			                          "}";
+			String responseToClient = "{\n" + "  \"issuer\": \""
+			                          + scheme + "://" + hostname + ":" + port + "/\",\n" + "  \"authorization_endpoint\": \""
+			                          + scheme + "://" + hostname + ":" + port + matcher.group(1) + "/oauth/authorize\",\n"
+			                          + "  \"token_endpoint\": \""
+			                          + scheme + "://" + hostname + ":" + port + "/oauth/token\",\n" + "  \"scopes_supported\": [\n"
+			                          + "    \"user:check-access\",\n"
+			                          + "    \"user:full\",\n"
+			                          + "    \"user:info\",\n"
+			                          + "    \"user:list-projects\",\n"
+			                          + "    \"user:list-scoped-projects\"\n"
+			                          + "  ],\n"
+			                          + "  \"response_types_supported\": [\n"
+			                          + "    \"code\",\n"
+			                          + "    \"token\"\n"
+			                          + "  ],\n"
+			                          + "  \"grant_types_supported\": [\n"
+			                          + "    \"authorization_code\",\n"
+			                          + "    \"implicit\"\n"
+			                          + "  ],\n"
+			                          + "  \"code_challenge_methods_supported\": [\n"
+			                          + "    \"plain\",\n"
+			                          + "    \"S256\"\n"
+			                          + "  ]\n"
+			                          + "}";
 
 			byte[] responseBytes = responseToClient.getBytes();
 			he.sendResponseHeaders(200, responseBytes.length);
