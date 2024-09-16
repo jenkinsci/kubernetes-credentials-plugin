@@ -97,8 +97,8 @@ public abstract class AbstractOpenShiftBearerTokenCredentialFIPSTest {
 
     @Test
     public void ensureFIPSCompliantURIRequest() throws IOException {
-        OpenShiftBearerTokenCredentialImpl cred;
-        cred = new OpenShiftBearerTokenCredentialImpl(CredentialsScope.GLOBAL, "id", "description", "username", "password");
+        OpenShiftBearerTokenCredentialImpl cred =
+                new OpenShiftBearerTokenCredentialImpl(CredentialsScope.GLOBAL, "id", "description", "username", "theaustraliancricketteamisthebest");
         try {
             cred.getToken(scheme + "://localhost:" + server.getAddress().getPort() + "/valid-response", null, skipTLSVerify);
             if (!shouldPass) {
