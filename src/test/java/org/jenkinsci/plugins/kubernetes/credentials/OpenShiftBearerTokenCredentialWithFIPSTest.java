@@ -1,13 +1,20 @@
 package org.jenkinsci.plugins.kubernetes.credentials;
 
+import hudson.util.FormValidation;
 import jenkins.security.FIPS140;
+import org.apache.commons.text.StringEscapeUtils;
 import org.junit.ClassRule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.jvnet.hudson.test.FlagRule;
 
 import java.util.Arrays;
 import java.util.Collection;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.nullValue;
 
 @RunWith(Parameterized.class)
 public class OpenShiftBearerTokenCredentialWithFIPSTest extends AbstractOpenShiftBearerTokenCredentialFIPSTest {
@@ -30,4 +37,15 @@ public class OpenShiftBearerTokenCredentialWithFIPSTest extends AbstractOpenShif
             {"http", true, false, "TLS and TLS check are mandatory when in FIPS mode"},
         });
     }
+
+    @Test
+    public void tooShortPassword() throws Exception {
+        FormValidation formValidation = new OpenShiftBearerTokenCredentialImpl.DescriptorImpl().doCheckPassword("");
+        assertThat(formValidation.getMessage(), containsString(StringEscapeUtils.escapeHtml4(Messages.passwordTooShortFIPS())));
+        formValidation = new OpenShiftBearerTokenCredentialImpl.DescriptorImpl().doCheckPassword("tooshort");
+        assertThat(formValidation.getMessage(), containsString(StringEscapeUtils.escapeHtml4(Messages.passwordTooShortFIPS())));
+        formValidation = new OpenShiftBearerTokenCredentialImpl.DescriptorImpl().doCheckPassword("theaustraliancricketteamisthebest");
+        assertThat(formValidation.getMessage(), nullValue());
+    }
+
 }
