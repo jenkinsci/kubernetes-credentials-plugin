@@ -52,14 +52,14 @@ public class OpenShiftBearerTokenCredentialTest {
     }
 
     @Test
-    public void testValidResponse() throws IOException {
+    public void testValidResponse() throws Exception {
         OpenShiftBearerTokenCredentialImpl t = new OpenShiftBearerTokenCredentialImpl(CredentialsScope.GLOBAL, CREDENTIAL_ID, "sample", USERNAME, PASSWORD);
         String token = t.getToken(getURI() + "valid-response", null, true);
         assertEquals("1234", token);
     }
 
     @Test
-    public void testMultipleCachedTokens() throws IOException {
+    public void testMultipleCachedTokens() throws Exception {
         OpenShiftBearerTokenCredentialImpl t = new OpenShiftBearerTokenCredentialImpl(CredentialsScope.GLOBAL, CREDENTIAL_ID, "sample", USERNAME, PASSWORD);
         String token1 = t.getToken(getURI() + "valid-response", null, true);
         String token2 = t.getToken(getURI() + "valid-response2", null, true);
@@ -70,7 +70,7 @@ public class OpenShiftBearerTokenCredentialTest {
     }
 
     @Test
-    public void testBadStatusCode() throws IOException {
+    public void testBadStatusCode() throws Exception {
         expectedEx.expect(IOException.class);
         expectedEx.expectMessage("The response from the OAuth server was invalid: The OAuth service didn't respond with a redirection but with '400: Bad Request'");
 
@@ -79,7 +79,7 @@ public class OpenShiftBearerTokenCredentialTest {
     }
 
     @Test
-    public void testMissingLocation() throws IOException {
+    public void testMissingLocation() throws Exception {
         expectedEx.expect(IOException.class);
         expectedEx.expectMessage("The response from the OAuth server was invalid: The OAuth service didn't respond with location header");
 
@@ -88,7 +88,7 @@ public class OpenShiftBearerTokenCredentialTest {
     }
 
     @Test
-    public void testBadLocation() throws IOException {
+    public void testBadLocation() throws Exception {
         expectedEx.expect(IOException.class);
         expectedEx.expectMessage("The response from the OAuth server was invalid: The response contained no token");
 

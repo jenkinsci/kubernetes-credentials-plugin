@@ -3,6 +3,7 @@ package org.jenkinsci.plugins.kubernetes.credentials;
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import hudson.Extension;
+import hudson.model.Descriptor;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
 import jenkins.security.FIPS140;
@@ -48,7 +49,8 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
     private transient ConcurrentMap<String, Token> tokenCache = new ConcurrentHashMap<>();
 
     @DataBoundConstructor
-    public OpenShiftBearerTokenCredentialImpl(CredentialsScope scope, String id, String description, String username, String password) {
+    public OpenShiftBearerTokenCredentialImpl(CredentialsScope scope, String id, String description, String username, String password)
+            throws Descriptor.FormException {
         super(scope, id, description, username, password);
     }
 

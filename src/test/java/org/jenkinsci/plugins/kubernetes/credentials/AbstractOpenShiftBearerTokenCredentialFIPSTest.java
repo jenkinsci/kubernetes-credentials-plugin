@@ -96,7 +96,7 @@ public abstract class AbstractOpenShiftBearerTokenCredentialFIPSTest {
     }
 
     @Test
-    public void ensureFIPSCompliantURIRequest() throws IOException {
+    public void ensureFIPSCompliantURIRequest() throws Exception {
         OpenShiftBearerTokenCredentialImpl cred =
                 new OpenShiftBearerTokenCredentialImpl(CredentialsScope.GLOBAL, "id", "description", "username", "theaustraliancricketteamisthebest");
         try {
