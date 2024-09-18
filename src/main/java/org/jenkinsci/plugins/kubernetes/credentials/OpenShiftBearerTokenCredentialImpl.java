@@ -3,9 +3,13 @@ package org.jenkinsci.plugins.kubernetes.credentials;
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import hudson.Extension;
+import hudson.model.Descriptor;
+import hudson.util.FormValidation;
 import hudson.util.Secret;
+import jenkins.security.FIPS140;
 import net.sf.json.JSONObject;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.NameValuePair;
@@ -17,6 +21,8 @@ import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 import java.io.IOException;
 import java.net.URI;
@@ -43,7 +49,8 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
     private transient ConcurrentMap<String, Token> tokenCache = new ConcurrentHashMap<>();
 
     @DataBoundConstructor
-    public OpenShiftBearerTokenCredentialImpl(CredentialsScope scope, String id, String description, String username, String password) {
+    public OpenShiftBearerTokenCredentialImpl(CredentialsScope scope, String id, String description, String username, String password)
+            throws Descriptor.FormException {
         super(scope, id, description, username, password);
     }
 
@@ -168,6 +175,15 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
         public String getDisplayName() {
             return "OpenShift Username and Password";
         }
+
+        @RequirePOST
+        public FormValidation doCheckPassword(@QueryParameter String password) {
+            if(FIPS140.useCompliantAlgorithms() && StringUtils.length(password) < 14) {
+                return FormValidation.error(org.jenkinsci.plugins.kubernetes.credentials.Messages.passwordTooShortFIPS());
+            }
+            return FormValidation.ok();
+        }
+
     }
 
     public static class Token {

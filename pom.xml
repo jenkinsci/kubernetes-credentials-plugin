@@ -51,6 +51,8 @@
 
     <spotbugs.effort>Max</spotbugs.effort>
     <spotbugs.threshold>Low</spotbugs.threshold>
+
+    <hpi.compatibleSinceVersion>190</hpi.compatibleSinceVersion>
   </properties>
 
   <dependencies>
@@ -72,6 +74,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>credentials</artifactId>
+      <version>1378.v81ef4269d764</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
