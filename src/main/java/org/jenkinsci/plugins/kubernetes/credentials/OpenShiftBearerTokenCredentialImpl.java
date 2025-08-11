@@ -9,7 +9,6 @@ import hudson.util.Secret;
 import jenkins.security.FIPS140;
 import net.sf.json.JSONObject;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.NameValuePair;
@@ -178,7 +177,7 @@ public class OpenShiftBearerTokenCredentialImpl extends UsernamePasswordCredenti
 
         @RequirePOST
         public FormValidation doCheckPassword(@QueryParameter String password) {
-            if(FIPS140.useCompliantAlgorithms() && StringUtils.length(password) < 14) {
+            if(FIPS140.useCompliantAlgorithms() && password != null && password.length() < 14) {
                 return FormValidation.error(org.jenkinsci.plugins.kubernetes.credentials.Messages.passwordTooShortFIPS());
             }
             return FormValidation.ok();
