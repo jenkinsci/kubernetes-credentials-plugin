@@ -1,5 +1,5 @@
 buildPlugin(
-    timeout: 10,
+    timeout: 20,
     failFast: true,
     configurations: [
         [platform: 'linux', jdk: 25],
