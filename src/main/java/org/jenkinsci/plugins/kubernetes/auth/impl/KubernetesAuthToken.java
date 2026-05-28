@@ -34,6 +34,15 @@ public class KubernetesAuthToken extends AbstractKubernetesAuth {
 
     @Override
     public ConfigBuilder decorate(ConfigBuilder builder, KubernetesAuthConfig config) throws KubernetesAuthException {
-        return builder.withOauthToken(getToken(config));
+        // Fail-fast
+        getToken(config);
+        // Provider allows short-lived refreshed tokens with retry on 401
+        return builder.withOauthTokenProvider(() -> {
+            try {
+                return getToken(config);
+            } catch (KubernetesAuthException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }
