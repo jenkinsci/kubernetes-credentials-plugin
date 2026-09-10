@@ -42,8 +42,8 @@
     <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
 
     <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
-    <jenkins.baseline>2.504</jenkins.baseline>
-    <jenkins.version>${jenkins.baseline}.1</jenkins.version>
+    <jenkins.baseline>2.516</jenkins.baseline>
+    <jenkins.version>${jenkins.baseline}.3</jenkins.version>
 
     <!-- maven plugins versions -->
     <maven-coveralls.version>4.3.0</maven-coveralls.version>
@@ -115,9 +115,14 @@
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
         <artifactId>bom-${jenkins.baseline}.x</artifactId>
-        <version>5015.vb_52d36583443</version>
+        <version>6128.v8e4ce4620a_2b_</version>
         <scope>import</scope>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jenkins-ci.plugins</groupId>
+        <artifactId>kubernetes-client-api</artifactId>
+        <version>7.9.0-278.v15998118189e</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
